@@ -1,0 +1,28 @@
+snippet BIT
+
+
+  struct BIT{
+    vector<int> bit;
+    int n;
+
+    BIT(int m){
+      n = m;
+      bit.assign(2*n,0);
+    }
+
+    int sum(int i){
+      int s = 0;
+      while(i>0){
+        s+=bit[i];
+        i-=i&-i;
+      }
+      return s;
+    }
+    void add(int i,int x){
+      while(i<=n){
+        bit[i]+=x;
+        i+=i&-i;
+      }
+    }
+  };
+

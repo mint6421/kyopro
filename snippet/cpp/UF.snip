@@ -1,0 +1,44 @@
+snippet UF
+
+
+
+
+  struct UnionFind
+  {
+
+    vector<int> par;
+    vector<int> sizes;
+
+    UnionFind(int n) : par(n), sizes(n, 1) {
+      rep(i,n) par[i] = i;
+    }
+
+    int root(int x) {
+      if (x == par[x]) return x;
+      return par[x] = root(par[x]); 
+    }
+
+    bool unite(int x, int y) {
+
+      x = root(x);
+      y = root(y);
+
+      if (x == y) return false;
+
+      if (sizes[x] < sizes[y]) swap(x, y);
+
+      par[y] = x;
+      sizes[x] += sizes[y];
+
+      return true;
+    }
+
+    bool find(int x,int y){
+      return root(x)==root(y);
+    }
+
+    int size(int x) {
+      return sizes[root(x)];
+    }
+  };
+

@@ -1,0 +1,34 @@
+snippet segTree
+
+  struct SegTree{
+
+    int sz;
+    vector<int> seg;
+    int M1;
+
+    SegTree(int n,int m1){
+      M1 = m1;
+      sz = 1;
+      while(sz < n) sz <<= 1;
+      seg.assign(2*sz,M1);
+    }
+
+    void update(int i,int x){
+      i+= sz;
+      seg[i] = x;
+      while(i >>= 1){
+        seg[i] = min(seg[2*i],seg[2*i+1]);
+      }
+    }
+
+    int query(int a,int b){
+      int l = M1,r = M1;
+      for(a+=sz,b+=sz;a<b;a>>=1,b>>=1){
+        if(a&1) l = min(l,seg[a++]);
+        if(b&1) r = min(seg[--b],r);
+      }
+      return min(l,r);
+    }
+  };
+
+

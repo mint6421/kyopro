@@ -1,0 +1,56 @@
+snippet kruskal
+
+  struct UnionFind
+  {
+
+    vector<int> par;
+    vector<int> sizes;
+
+    UnionFind(int n) : par(n), sizes(n, 1) {
+      rep(i,n) par[i] = i;
+    }
+
+    int find(int x) {
+      if (x == par[x]) return x;
+      return par[x] = find(par[x]); 
+    }
+
+    bool unite(int x, int y) {
+
+      x = find(x);
+      y = find(y);
+
+      if (x == y) return false;
+
+      if (sizes[x] < sizes[y]) swap(x, y);
+
+      par[y] = x;
+      sizes[x] += sizes[y];
+
+      return true;
+    }
+
+    int size(int x) {
+      return sizes[find(x)];
+    }
+  };
+
+
+  template<typename T>
+  T kruskal(Edges<T> &es,int n) {
+    sort(all(es),[](const edge<T> & a,const edge<T> &b){
+        return (a.cost < b.cost);
+        });
+
+    UnionFind uf(n);
+    T min_cost = 0;
+
+    for(auto &e:es) {
+      if(uf.unite(e.src,e.to)) 
+        min_cost += e.cost;
+    }
+
+    return min_cost;
+  }
+
+

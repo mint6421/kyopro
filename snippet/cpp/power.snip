@@ -1,0 +1,13 @@
+snippet power
+
+
+  ll power(ll x,ll k){
+    ll ret=1;
+    while(k>0){
+      if(k&1) (ret*=x) %= M;
+      (x*=x) %= M;
+      k >>= 1;
+    }
+    return ret;
+  }
+
