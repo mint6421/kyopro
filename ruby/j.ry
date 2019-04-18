@@ -1,0 +1,21 @@
+s = gets.chomp
+s = s.reverse
+words = ["dream","dreamer","erase","eraser"]
+
+4.times do |i|
+  words[i] = words[i].reverse
+end
+
+until s.empty? do
+  res = false
+  words.each do |w|
+    if s.start_with?(w)
+      s = s[w.length...s.length]
+      res = true
+    end
+  end
+  break unless res
+end
+
+puts s.empty? ? "YES":"NO"
+
