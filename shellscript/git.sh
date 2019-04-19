@@ -3,7 +3,7 @@
 #このディレクトリ内で作られたファイルをgitに乗せる
 
 
-MoveFiles(){
+CopyFiles(){
   NewDir=~/git/codeforces/"$1"
   mkdir $NewDir
 
@@ -49,7 +49,7 @@ AddGit(){
 
 }
 
-MoveFiles $1
+CopyFiles $1
 RenameFiles $1
 AddGit
 
