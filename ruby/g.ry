@@ -1,9 +1,0 @@
-n = gets.to_i
-a = gets.split(" ").map(&:to_i).sort
-score=[0,0]
-
-n.times do |i|
-  score[i%2]+=a.pop
-end
-puts score[0]-score[1]
-
