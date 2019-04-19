@@ -1,0 +1,11 @@
+n,a,b = gets.split(" ").map(&:to_i)
+ans=0
+(n+1).times do |i|
+  sum = i.to_s.split("").map(&:to_i).inject(:+)
+  if a<= sum && sum<= b
+    ans += i
+  end
+end
+
+puts ans
+

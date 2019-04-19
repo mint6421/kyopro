@@ -1,0 +1,22 @@
+n = gets.to_i
+
+t0=0
+x0=0
+y0=0
+res = true
+
+n.times do
+  t,x,y = gets.split(" ").map(&:to_i)
+  x1 = (x-x0).abs
+  y1 = (y-y0).abs
+  t1 = t-t0
+  if !(t1%2 ==(x1+y1)%2 && t1>=(x1+y1))
+    res = false
+  end
+  t0=t
+  x0=x
+  y0=y
+end
+
+puts res ? "Yes":"No"
+

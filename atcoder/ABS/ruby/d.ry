@@ -1,0 +1,21 @@
+n = gets.to_i
+a = gets.split.map(&:to_i)
+
+sum=0
+flag=true
+
+while flag
+  for i in 0...n do
+    if a[i]&1==1 then
+      flag = false
+      break;
+    end
+    a[i]/=2
+  end
+  if flag then
+    sum+=1
+  end
+end
+
+puts sum
+
