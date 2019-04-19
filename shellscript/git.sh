@@ -3,21 +3,24 @@
 #このディレクトリ内で作られたファイルをgitに乗せる
 
 
-RenameFile(){
-  NewFile=~/git/codeforces/"$1"
-  mkdir $NewFile
+MakeDirectory(){
+  NewDir=~/git/codeforces/"$1"
+  mkdir $NewDir
 
   for file in [a-z].cpp
   do
-    cp "$file" "$NewFile"
+    cp "$file" "$NewDir"
+    cd $NewDir
+    if [ $? != 0 ]; then
+      echo "Can't copy File ! "
+      exit
+    fi
   done
 
-  cd $NewFile
-  if [ $? != 0 ]; then
-    echo "Can't Find File ! "
-    exit
-  fi
+}
 
+
+RenameFile(){
   for file in [a-z].cpp
   do
     NewName=`echo "$1${file%.*}"| tr "[a-z]" "[A-Z]"`
@@ -45,6 +48,7 @@ AddGit(){
 
 }
 
+MakeDirectory $1
 RenameFile $1
 AddGit
 
