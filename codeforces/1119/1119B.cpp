@@ -1,4 +1,5 @@
 
+
 #include<bits/stdc++.h>
 using namespace std;
 #define inf 1000000000
@@ -26,49 +27,30 @@ void init(){
   ios::sync_with_stdio(false);
 }
 
-
-ll h,n;
-ll d[300000];
-ll sum,mi,m;
+int n,h;
+int a[1100];
+vector<int> v;
 
 int main(){
-  cin>>h>>n;
+  cin>>n>>h;
   rep(i,n){
-    cin>>d[i];
-    sum+=d[i];
-    m+=d[i];
-    mi=min(mi,m);
+    cin>>a[i];
   }
 
+  rep(k,n){
+    v.PB(a[k]);
 
-  ll hh=h;
-  rep(i,n){
-    hh+=d[i];
-    if(hh<=0){
-      cout<<i+1<<endl;
+    sort(all(v));
+    reverse(all(v));
+    int w=h;
+    for(int i=0;i<v.size();i+=2){
+      w-=v[i];
+    }
+    if(w<0){
+      cout<<k<<endl;
       return 0;
     }
   }
-  if(hh>=h){
-    cout<<-1<<endl;
-    return 0;
-  }
- 
-  ll ans=0;
 
-  if(sum!=0)
-    ans=(h+mi-sum-1)/(-sum);
-
-  h+=sum*ans;
-  ans*=n;
-//  cout<<sum<<' '<<ans<<endl;
-//  cout<<h<<endl;
-  rep(i,n+1){ 
-    if(h<=0){
-      cout<<ans+i<<endl;
-      return 0;
-    }
-    h+=d[i];
-  }
+  cout<<n<<endl;
 }
-
