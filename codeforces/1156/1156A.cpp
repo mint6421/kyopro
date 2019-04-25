@@ -27,55 +27,25 @@ void init(){
 }
 
 
-
-
-struct BIT{
-  vector<int> bit;
-  int n;
-
-  BIT(int m){
-    n = m;
-    bit.assign(2*n,0);
-  }
-
-  int sum(int i){
-    int s = 0;
-    while(i>0){
-      s+=bit[i];
-      i-=i&-i;
-    }
-    return s;
-  }
-  void add(int i,int x){
-    while(i<=n){
-      bit[i]+=x;
-      i+=i&-i;
-    }
-  }
-};
+int n,m;
+ll aa,ab,ba,bb;
 
 
 int main(){
-  int n;
-  ll k,a[300000]={},s[300000]={};
-  cin>>n>>k;
-  FOR(i,1,n+1){
-    cin>>a[i];
-    a[i]-=k;
-    a[i]+=a[i-1];
-    s[i]=a[i];
+  cin>>n>>m;
+  rep(i,n){
+    int c;
+    cin>>c;
+    if(c%2) ab++;
+    else aa++;
   }
-  sort(s+1,s+n+2);
-  BIT b(n);
-  ll ans=0;
-  int x = lower_bound(s+1,s+n+2,0)-s;
-  b.add(x,1);
-  FOR(i,1,n+1){
-    x = lower_bound(s+1,s+n+2,a[i])-s;
-    ans += b.sum(x);
-    b.add(x,1);
+  rep(i,m){
+    int c;
+    cin>>c;
+    if(c%2) bb++;
+    else ba++;
   }
 
-  cout<<ans<<endl;
-
+  cout<<min(ab,ba)+min(aa,bb)<<endl;
 }
+
