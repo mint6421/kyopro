@@ -28,40 +28,35 @@ void init(){
 
 
 int n;
-vector<int> a;
-multiset<int> s;
+int a[110000];
+int r[110000],l[110000];
 
 
 int main(){
   cin>>n;
   rep(i,n){
-    int c;
-    cin>>c;
-    a.PB(c);
+    cin>>a[i];
   }
+
+  r[0]=a[0];
+  l[n-1]=a[n-1];
+  FOR(i,1,n+1){
+    r[i]=__gcd(r[i-1],a[i]);
+  }
+  rrep(i,n-2){
+    l[i]=__gcd(l[i+1],a[i]);
+  }
+
+  int ans=max(r[n-2],l[1]);
+/*
   rep(i,n){
-    int c;
-    cin>>c;
-    s.insert(c);
+    cout<<l[i]<<' '<<r[i]<<endl;
+  }
+*/
+
+  FOR(i,1,n-1){
+    ans=max(ans,__gcd(r[i-1],l[i+1]));
   }
 
-
-  vector<int> c;
-
-  rep(i,n){
-    auto it = s.lower_bound((n-a[i])%n);
-
-    if(it!=s.end()){
-      c.PB((*it+a[i])%n);
-      s.erase(it);
-    }else{
-      c.PB((*s.begin()+a[i])%n);
-      s.erase(s.begin());
-    }
-  }
-
-  rep(i,n){
-    cout<<c[i]<<' ';
-  }
-  cout<<endl;
+  cout<<ans<<endl;
 }

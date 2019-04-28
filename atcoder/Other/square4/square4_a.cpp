@@ -28,40 +28,41 @@ void init(){
 
 
 int n;
-vector<int> a;
-multiset<int> s;
 
+int a,b;
 
-int main(){
-  cin>>n;
-  rep(i,n){
-    int c;
-    cin>>c;
-    a.PB(c);
-  }
-  rep(i,n){
-    int c;
-    cin>>c;
-    s.insert(c);
-  }
-
-
-  vector<int> c;
-
-  rep(i,n){
-    auto it = s.lower_bound((n-a[i])%n);
-
-    if(it!=s.end()){
-      c.PB((*it+a[i])%n);
-      s.erase(it);
-    }else{
-      c.PB((*s.begin()+a[i])%n);
-      s.erase(s.begin());
+void f(string s,string t){
+  string sa=s;
+  string sb=s;
+  rep(i,s.size()){
+    if(s[i]=='?'){
+      sa[i]='a';
+      sb[i]='z';
     }
   }
 
+  if(sa>t) a++;
+  if(sb<t) b++;
+}
+
+int main(){
+  string s[11000],t;
+
+  cin>>n;
   rep(i,n){
-    cout<<c[i]<<' ';
+    cin>>s[i];
+  }
+  cin>>t;
+
+  rep(i,n){
+    f(s[i],t);
+  }
+  
+//  cout<<a<<' '<<b<<endl;
+  FOR(i,b+1,n-a+2){
+    if(i>b+1) cout<<' ';
+    cout<<i;
   }
   cout<<endl;
+
 }
