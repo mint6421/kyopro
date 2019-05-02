@@ -27,48 +27,32 @@ void init(){
 }
 
 
-bool is_prime(int x){
-  if(x<2) return false;
-  for(int i=2;i*i<=x;i++){
-    if(x%i==0) return false;
+int n;
+ll fac[110000],ans,res=1;
+
+
+ll power(ll x,ll k){
+  ll ret=1;
+  while(k>0){
+    if(k&1) (ret*=x) %= M;
+    (x*=x) %= M;
+    k >>= 1;
   }
-  return true;
+  return ret;
 }
 
-
-
-int n,k,a;
-vector<int> v;
-
 int main(){
-  cin>>n>>k;
-  if(n==30&&k==3) return 0;
-  if(k==1&&n!=1){
-    cout<<n<<endl;
-    return 0;
-  }
-  for(int i=2;i<=n;i++){
-    if(!is_prime(i))continue;
-    if(n%i==0){
-      v.PB(i);
-      n/=i;
-      i--;
-      a++;
-      if(a==k-1){
-          v.PB(n);
-        break;
-      }
-    }
+  cin>>n;
+  FOR(i,1,n+1){
+    fac[i]=(fac[i-1]+power(i,M-2))%M;
   }
 
-  sort(all(v));
-  if(v.size()==k&&v[0]!=1){
-    rep(i,k){
-      cout<<v[i]<<' ';
-    }
-    cout<<endl;
-  }else{
-    cout<<-1<<endl;
+  FOR(i,1,n+1){
+    int x;
+    cin>>x;
+    ans=(ans+x*(fac[i]+fac[n-i+1]-1+M)%M)%M;
+    res=res*i%M;
   }
 
+  cout<<(ans*res)%M<<endl;
 }
