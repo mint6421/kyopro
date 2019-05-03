@@ -1,5 +1,4 @@
 
-
 #include<bits/stdc++.h>
 using namespace std;
 #define inf 1000000000
@@ -27,49 +26,44 @@ void init(){
   ios::sync_with_stdio(false);
 }
 
-int x;
-int ans=0;
-
-int f(int m){
-  int r=1;
-  int res=-1;
-  int n=0;
-  while(r<m){
-//    cout<<r<<' '<<m<<endl;
-//    cout<<(r&m)<<endl;
-    if((r&m)==0){
-      res=n;
-    }
-    r*=2;
-    n++;
-  }
-
-  return res+1;
-}
 
 int main(){
-  cin>>x;
-  int k=0;
-  int m=f(x);
-  vector<int> v;
-  while(m!=0){
-//    cout<<m<<endl;
-    v.PB(m);
-    k++;
-    x= x^((1<<m)-1);
-//    cout<<x<<endl;
-    if(f(x)==0) break;
-    x++;
-    k++;
-    m = f(x);
-//    cout<<x<<endl;
+  int n;
+  cin>>n;
+  while(n--){
+    string s;
+    int m=0;
+    cin>>s;
+    sort(all(s));
+    vector<char> v;
+    string ans;
+    rep(i,s.size()){
+      v.PB(s[i]);
+    }
+    ans.PB(v[0]);
+    v.erase(v.begin());
+    while(!v.empty()){
+//      cout<<ans<<' '<<v[0]<<endl;
+      if(abs(v[0]-ans[ans.size()-1])!=1){
+        ans.PB(v[0]);
+        v.erase(v.begin());
+        m=0;
+      }else if(abs(v[0]-ans[0])!=1){
+        ans.insert(ans.begin(),v[0]);
+        v.erase(v.begin());
+        m=0;
+      }else{
+        v.PB(v[0]);
+        v.erase(v.begin());
+        m++;
+      }
+      if(m>v.size()) break;
+    }
+    
+    if(!v.empty()){
+      cout<<"No answer"<<endl;
+    }else{
+      cout<<ans<<endl;
+    }
   }
-//  cout<<x<<endl;
-
-  cout<<k<<endl;
-  if(v.size()==0) return 0;
-  rep(i,v.size()){
-    cout<<v[i]<<' ';
-  }
-  cout<<endl;
 }

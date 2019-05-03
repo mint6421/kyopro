@@ -27,25 +27,45 @@ void init(){
 }
 
 
-int n,m;
-ll aa,ab,ba,bb;
-
+int n;
+int a[110];
 
 int main(){
-  cin>>n>>m;
+  cin>>n;
   rep(i,n){
-    int c;
-    cin>>c;
-    if(c%2) ab++;
-    else aa++;
-  }
-  rep(i,m){
-    int c;
-    cin>>c;
-    if(c%2) bb++;
-    else ba++;
+    cin>>a[i];
   }
 
-  cout<<min(ab,ba)+min(aa,bb)<<endl;
+  int ans=0;
+  rep(i,n-1){
+    if(a[i]==1&&a[i+1]==2)
+      ans+=3;
+    if(a[i]==1&&a[i+1]==3)
+      ans+=4;
+    if(a[i]==2&&a[i+1]==1)
+      ans+=3;
+    if(a[i]==2&&a[i+1]==3){
+      ans=inf;
+      break;
+    }
+    if(a[i]==3&&a[i+1]==1)
+      ans+=4;
+    if(a[i]==3&&a[i+1]==2){
+      ans=inf;
+      break;
+    }
+  }
+
+
+  if(ans==inf)
+    cout<<"Infinite"<<endl;
+  else{
+    rep(i,n-2){
+      if(a[i]==3&&a[i+1]==1&&a[i+2]==2)
+        ans--;
+    }
+    cout<<"Finite"<<endl;
+    cout<<ans<<endl;
+  }
+
 }
-
