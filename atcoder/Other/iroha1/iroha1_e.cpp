@@ -21,54 +21,33 @@ const int vy[4] = {1,0,-1,0};
 #define S second
 #define PB push_back
 #define EB emplace_back
+#define int ll
 void init(){
   cin.tie(0);
   ios::sync_with_stdio(false);
 }
 
 
-bool is_prime(int x){
-  if(x<2) return false;
-  for(int i=2;i*i<=x;i++){
-    if(x%i==0) return false;
+int n,a,b;
+int d[300000];
+
+
+main(){
+  cin>>n>>a>>b;
+  rep(i,b){
+    cin>>d[i];
   }
-  return true;
-}
+  sort(d,d+b);
 
-
-
-int n,k,a;
-vector<int> v;
-
-int main(){
-  cin>>n>>k;
-  if(n==30&&k==3) return 0;
-  if(k==1&&n!=1){
-    cout<<n<<endl;
-    return 0;
-  }
-  for(int i=2;i<=n;i++){
-    if(!is_prime(i))continue;
-    if(n%i==0){
-      v.PB(i);
-      n/=i;
-      i--;
-      a++;
-      if(a==k-1){
-          v.PB(n);
-        break;
-      }
-    }
+  int m=0,ans=0;
+  rep(i,b){
+    ans+=d[i]-m-(d[i]-m+a-1)/a;
+    m=d[i];
+//    cout<<ans<<endl;
   }
 
-  sort(all(v));
-  if(v.size()==k&&v[0]!=1){
-    rep(i,k){
-      cout<<v[i]<<' ';
-    }
-    cout<<endl;
-  }else{
-    cout<<-1<<endl;
-  }
+  ans+=n-m-(n-m)/a;
 
+
+  cout<<ans<<endl;
 }
