@@ -29,36 +29,57 @@ void init(){
 
 
 main(){
-  int n,m;
-  cin>>n>>m;
-  vector<int> a(n);
-  rep(i,n){
-    cin>>a[i];
-  }
-  sort(all(a));
+  int q;
+  cin>>q;
+  priority_queue<int> q1;
+  priority_queue<int,vector<int>,greater<int>> q2;
+  int q1sum=0,q2sum=0;
+  int sum=0;
 
-  vector<P> b(m);
-  rep(i,m){
-    int x,y;
-    cin>>x>>y;
-    b[i]=P(y,x);
-  }
-  sort(all(b));
-  reverse(all(b));
-
-  int j=0;
-  rep(i,n){
-    if(j==m) break;
-    if(a[i]<b[j].F){
-      a[i]=b[j].F;
-      b[j].S--;
+  while(q--){
+    int a;
+    cin>>a;
+    if(a==1){
+      int b,c;
+      cin>>b>>c;
+      sum+=c;
+      if(q1.empty()){
+        q1.push(b);
+        q1sum+=b;
+      }else if(q1.top()>b){
+        q1.push(b);
+        q1sum+=b;
+        if(q1.size()-q2.size()>1){
+          q2.push(q1.top());
+          q2sum+=q1.top();
+          q1sum-=q1.top();
+          q1.pop();
+        }
+      }else if(q2.empty()||q2.top()<b){
+        q2.push(b);
+        q2sum+=b;
+        if(q2.size()-q1.size()>0){
+          q1.push(q2.top());
+          q1sum+=q2.top();
+          q2sum-=q2.top();
+          q2.pop();
+        }
+      }else{
+        if(q1.size()-q2.size()>0){
+          q2.push(b);
+          q2sum+=b;
+        }else{
+          q1.push(b);
+          q1sum+=b;
+        }
+      }
+    }else{
+      int res=sum;
+      res+=q1.size()*q1.top()-q1sum;
+      res+=q2sum-q1.top()*q2.size();
+//      cout<<q1sum<<' '<<q2sum<<endl;
+      cout<<q1.top()<<' '<<res<<endl;
     }
-    if(b[j].S==0) j++;
+//    cout<<q1.size()<<' '<<q2.size()<<' '<<q1sum<<' '<<q2sum<<endl;
   }
-
-  int ans=0;
-  rep(i,n){
-    ans+=a[i];
-  }
-  cout<<ans<<endl;
 }
