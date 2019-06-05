@@ -28,70 +28,39 @@ void init(){
 }
 
 
-
-int n,k;
+ull e[210000];
+ull n;
+ull x;
+ull a[210000];
+ull ans=ULLONG_MAX;
 
 
 main(){
-  cin>>n>>k;
-  double kn=k;
-  int kk,m=0;
-
-  /*
-  while(m<n){
-    m=(2*kk-k+1)*(kn/2);
-    cout<<m<<endl;
-    kk++;
-  }
-   */
-  
-
-  kk=(n+k-1)/k;
-  kk-=(k/2);
-  m=(2*kk+k-1)*(kn/2);
-  
-  if(m-n<0){
-    kk++;
-    m=(2*kk+k-1)*(kn/2);
-  }
-  //cout<<kk<<' '<<m<<endl;
-
-
-  vector<int> ans;
-  FOR(i,kk,kk+k+1){
-    ans.PB(i);
-    //cout<<i<<endl;
-  }
- 
-  int sum=0;
-  //cout<<m-n<<' '<<kk<<endl;
-  if(m-n>=k){
-    cout<<"NO"<<endl;
-    return 0;
-  }
-  
-  rep(i,m-n){
-    ans[i]--;
-    sum++;
+  cin>>n>>x;
+  rep(i,n){
+    cin>>a[i];
   }
 
-  if(sum==1){
-    ans[1]--;
-    ans[k-1]++;
+  rrep(i,n){
+    e[i]+=a[i]+e[i+1];
+    //cout<<e[i]<<' ';
   }
+  //cout<<endl;
 
- 
-  rep(i,k-1){
-    if(2*ans[i]<ans[i+1]){
-      cout<<"NO"<<endl;
-      return 0;
+  FOR(k,1,n+1){
+    ull res=0;
+    int j=1;
+    for(int i=n;i>=0;i-=k){
+      if(j==1){
+        res+=5*(e[max(0LL,i-k)]-e[i]);
+      }else{
+        res+=(2*j+1)*(e[max(0LL,i-k)]-e[i]);
+      }
+      j++;
     }
+    //cout<<res<<endl;
+    ans=min(ans,k*x+res);
   }
 
-  cout<<"YES"<<endl;
-  rep(i,k){
-    cout<<ans[i]<<' ';
-  }
-  cout<<endl;
-
+  cout<<n*x+ans<<endl;
 }
