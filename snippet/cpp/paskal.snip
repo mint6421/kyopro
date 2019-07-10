@@ -1,0 +1,17 @@
+snippet paskal  
+
+  vector<vector<int>> paskal(int n){
+    vector<vector<int>> c(n+1,vector<int>(n+1,0));
+
+    rep(i,n+1){
+      rep(j,n+1){
+        if(j>i) break;
+        if(i==0||j==0) c[i][j]=1;
+        else c[i][j]=c[i-1][j-1]+c[i-1][j];
+        c[i][j]%=M;
+      }
+    }
+
+    return c;
+  }
+

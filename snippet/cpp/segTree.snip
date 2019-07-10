@@ -1,34 +1,51 @@
 snippet segTree
 
-  struct SegTree{
 
+  template< typename Monoid >
+  struct segTree {
+    using F = function< Monoid(Monoid, Monoid) >;
+   
     int sz;
-    vector<int> seg;
-    int M1;
-
-    SegTree(int n,int m1){
-      M1 = m1;
+    vector< Monoid > seg;
+   
+    const F f;
+    const Monoid M1;
+   
+    segTree(int n, const F f, const Monoid &M1) : f(f), M1(M1) {
       sz = 1;
       while(sz < n) sz <<= 1;
-      seg.assign(2*sz,M1);
+      seg.assign(2 * sz, M1);
     }
-
-    void update(int i,int x){
-      i+= sz;
-      seg[i] = x;
-      while(i >>= 1){
-        seg[i] = min(seg[2*i],seg[2*i+1]);
+   
+    void set(int k, const Monoid &x) {
+      seg[k + sz] = x;
+    }
+   
+    void build() {
+      for(int k = sz - 1; k > 0; k--) {
+        seg[k] = f(seg[2 * k + 0], seg[2 * k + 1]);
       }
     }
-
-    int query(int a,int b){
-      int l = M1,r = M1;
-      for(a+=sz,b+=sz;a<b;a>>=1,b>>=1){
-        if(a&1) l = min(l,seg[a++]);
-        if(b&1) r = min(seg[--b],r);
+   
+    void update(int k, const Monoid &x) {
+      k += sz;
+      seg[k] = x;
+      while(k >>= 1) {
+        seg[k] = f(seg[2 * k + 0], seg[2 * k + 1]);
       }
-      return min(l,r);
+    }
+   
+    Monoid get(int a, int b) {
+      Monoid L = M1, R = M1;
+      for(a += sz, b += sz; a < b; a >>= 1, b >>= 1) {
+        if(a & 1) L = f(L, seg[a++]);
+        if(b & 1) R = f(seg[--b], R);
+      }
+      return f(L, R);
+    }
+   
+    Monoid operator[](const int &k) const {
+      return seg[k + sz];
     }
   };
-
 
