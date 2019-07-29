@@ -2,7 +2,7 @@
 #include<bits/stdc++.h>
 using namespace std;
 #define inf INT_MAX
-#define INF 1000000000000000
+#define INF LLONG_MAX
 #define ll long long
 #define ull unsigned long long
 #define M (int)(1e9+7)
@@ -24,11 +24,39 @@ const int vy[4] = {1,0,-1,0};
 #define int ll
 #define vi vector<int>
 
+bool f(int a,int b){
+  int sa=0,sb=0;
+  int c=1;
+  while(a||b){
+    int ra=a%10,rb=b%10;
+    if(ra==4&&rb==7){
+      sa+=7*c;
+      sb+=4*c;
+    }else if(ra==7&&rb==4){
+      sa+=4*c;
+      sb+=7*c;
+    }else{
+      sa+=ra*c;
+      sb+=rb*c;
+    }
+    c*=10;
+    a/=10;
+    b/=10;
+  }
+  //cout<<sa<<' '<<sb<<endl;
 
+  return sa>sb;
+}
 
-main(){
+signed main(){
   cin.tie(0);
   ios::sync_with_stdio(false);
 
+  int a,b;
+  cin>>a>>b;
+
+ 
+
+  cout<<(f(a,b)?a:b)<<endl;
 
 }
