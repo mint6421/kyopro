@@ -4,25 +4,18 @@
 
 
 CopyFiles(){
+
   NewDir=~/git/yukicoder
 
-  for file in [a-z].cpp
-  do
-    cp "$file" "$NewDir"
+  cp "$1" "$NewDir"
 
-    if [ $? != 0 ]; then
-      echo "Can't copy File ! "
-      exit
-    fi
-
-  done
 
   cd $NewDir
 }
 
 
 AddGit(){
-  cd ../../
+  cd ../
 
   git add *
   git commit -m "add new file"
@@ -39,7 +32,7 @@ AddGit(){
 
 }
 
-CopyFiles 
+CopyFiles $1
 AddGit
 
 echo "./git.sh already finished ! "
