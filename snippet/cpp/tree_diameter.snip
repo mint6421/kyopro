@@ -2,7 +2,7 @@ snippet tree_diameter
 
     
   template< typename T >
-  pair< T, int > dfs(const WeightedGraph< T > &g, int idx, int par) {
+  pair< T, int > tree_dfs(const WG< T > &g, int idx, int par) {
     pair< T, int > ret(0, idx);
     for(auto &e : g[idx]) {
       if(e.to == par) continue;
@@ -14,8 +14,8 @@ snippet tree_diameter
   }
 
   template< typename T >
-  T tree_diameter(const WeightedGraph< T > &g) {
-    auto p = dfs(g, 0, -1);
-    auto q = dfs(g, p.second, -1);
+  T tree_diameter(const WG< T > &g) {
+    auto p = tree_dfs(g, 0, -1);
+    auto q = tree_dfs(g, p.second, -1);
     return (q.first);
   }
