@@ -1,8 +1,8 @@
 
 #include<bits/stdc++.h>
 using namespace std;
-#define inf 1000000000
-#define INF 1000000000000000
+#define inf INT_MAX
+#define INF LLONG_MAX
 #define ll long long
 #define ull unsigned long long
 #define M (int)(1e9+7)
@@ -22,14 +22,25 @@ const int vy[4] = {1,0,-1,0};
 #define PB push_back
 #define EB emplace_back
 #define int ll
-void init(){
+#define vi vector<int>
+
+
+
+signed main(){
   cin.tie(0);
   ios::sync_with_stdio(false);
+
+  cout<<0<<' '<<0<<endl;
+  int a;
+  cin>>a;
+  if(a==0) return 0;
+
+  cout<<0<<' '<<a<<endl;
+  int b;
+  cin>>b;
+  if(b==0) return 0;
+
+  cout<<b/2<<' '<<a-b/2<<endl;
+  int c;
+  cin>>c;
 }
-
-
-main(){
-  int x,y;
-  cin>>x>>y;
-
-
