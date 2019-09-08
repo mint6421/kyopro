@@ -1,8 +1,8 @@
 
 #include<bits/stdc++.h>
 using namespace std;
-#define inf 1000000000
-#define INF 1000000000000000
+#define inf INT_MAX
+#define INF LLONG_MAX
 #define ll long long
 #define ull unsigned long long
 #define M (int)(1e9+7)
@@ -22,39 +22,80 @@ const int vy[4] = {1,0,-1,0};
 #define PB push_back
 #define EB emplace_back
 #define int ll
-void init(){
+#define vi vector<int>
+
+
+
+
+struct UnionFind
+{
+
+  vector<int> par;
+  vector<int> sizes;
+
+  UnionFind(int n) : par(n), sizes(n, 1) {
+    rep(i,n) par[i] = i;
+  }
+
+  int root(int x) {
+    if (x == par[x]) return x;
+    return par[x] = root(par[x]); 
+  }
+
+  bool unite(int x, int y) {
+
+    x = root(x);
+    y = root(y);
+
+    if (x == y) return false;
+
+    if (sizes[x] < sizes[y]) swap(x, y);
+
+    par[y] = x;
+    sizes[x] += sizes[y];
+
+    return true;
+  }
+
+  bool find(int x,int y){
+    return root(x)==root(y);
+  }
+
+  int size(int x) {
+    return sizes[root(x)];
+  }
+};
+
+signed main(){
   cin.tie(0);
   ios::sync_with_stdio(false);
-}
 
-int dp[2010][2010];
-
-main(){
   int n,m;
   cin>>n>>m;
-  vector<int> a(n+1),b(m+1);
-  rep(i,n){
-    cin>>a[i+1];
-  }
+  int res=n*(n-1)/2;
+  UnionFind uf(n);
+  vector<P> v;
   rep(i,m){
-    cin>>b[i+1];
+    int a,b;
+    cin>>a>>b;
+    a--;b--;
+    v.PB(P(a,b));
   }
 
-  rep(i,n+1){
-    dp[i][0]=1;
-  }
-  rep(i,m+1){
-    dp[0][i]=1;
-  }
-  
-  FOR(i,1,n+1){
-    FOR(j,1,m+1){
-      int res=dp[i-1][j]+dp[i][j-1]-dp[i-1][j-1];
-      if(a[i]==b[j]) res+=dp[i-1][j-1];
-      dp[i][j]=res+M;
-      dp[i][j]%=M;
-    }
+  reverse(all(v));
+  vi ans;
+  rep(i,m){
+    ans.PB(res);
+    //cout<<res<<endl;
+    int a=v[i].F,b=v[i].S;
+    if(uf.find(a,b)) continue;
+    res-=uf.size(a)*uf.size(b);
+    //cout<<uf.size(a)<<' '<<uf.size(b)<<endl;
+    uf.unite(a,b);
   }
 
-  cout<<dp[n][m]<<endl;
+  rep(i,m){
+    cout<<ans[m-i-1]<<endl;
+  }
+
 }
