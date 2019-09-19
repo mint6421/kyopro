@@ -23,27 +23,35 @@ const int vy[4] = {1,0,-1,0};
 #define EB emplace_back
 #define int ll
 #define vi vector<int>
-#define IP pair<int,P>
-#define PP pair<P,P>
 
-int f(int n){
-  if(n%4==0) return n;
-  if(n%4==1) return 1;
-  if(n%4==2) return n+1;
-  if(n%4==3) return 0;
-
-}
 
 
 signed main(){
   cin.tie(0);
   ios::sync_with_stdio(false);
-  cout<<fixed<<setprecision(20);
 
-  int a,b;
-  cin>>a>>b;
+  int n;
+  cin>>n;
+  vi b(n-1);
+  rep(i,n-1){
+    cin>>b[i];
+  }
 
-  cout<<(f(b)^f(max(0LL,a-1)))<<endl;
+  vi a(n,-inf);
+  a[0]=b[0];
+  a[1]=b[0];
+
+  FOR(i,1,n-1){
+    if(a[i]>b[i]) a[i]=b[i];
+    a[i+1]=b[i];
+  }
+
+  int ans=0;
+  rep(i,n){
+    ans+=a[i];
+  }
+
+  cout<<ans<<endl;
 
 
 }

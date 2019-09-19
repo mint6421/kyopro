@@ -26,24 +26,51 @@ const int vy[4] = {1,0,-1,0};
 #define IP pair<int,P>
 #define PP pair<P,P>
 
-int f(int n){
-  if(n%4==0) return n;
-  if(n%4==1) return 1;
-  if(n%4==2) return n+1;
-  if(n%4==3) return 0;
+int n,m;
+vector<IP> a;
 
+int f(int x,int y,int z){
+
+  vi v(n);
+
+  rep(i,n){
+    v[i]=a[i].F*x+a[i].S.F*y+a[i].S.S*z;
+  }
+
+  sort(all(v));
+  reverse(all(v));
+
+  int res=0;
+  rep(i,m){
+    res+=v[i];
+  }
+  return res;
 }
-
 
 signed main(){
   cin.tie(0);
   ios::sync_with_stdio(false);
   cout<<fixed<<setprecision(20);
 
-  int a,b;
-  cin>>a>>b;
+  cin>>n>>m;
+  a=vector<IP>(n);
+  rep(i,n){
+    cin>>a[i].F>>a[i].S.F>>a[i].S.S;
+  }
 
-  cout<<(f(b)^f(max(0LL,a-1)))<<endl;
+  int ans=-INF;
+
+  FOR(i,-1,2){
+    FOR(j,-1,2){
+      FOR(k,-1,2){
+        if(i==0||j==0||k==0) continue;
+        ans=max(ans,f(i,j,k));
+      }
+    }
+  }
+
+
+  cout<<ans<<endl;
 
 
 }

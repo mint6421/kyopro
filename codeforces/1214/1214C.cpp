@@ -25,25 +25,30 @@ const int vy[4] = {1,0,-1,0};
 #define vi vector<int>
 #define IP pair<int,P>
 #define PP pair<P,P>
-
-int f(int n){
-  if(n%4==0) return n;
-  if(n%4==1) return 1;
-  if(n%4==2) return n+1;
-  if(n%4==3) return 0;
-
-}
-
+void sayYes(bool f) {cout<<(f?"Yes":"No")<<endl;}
+void sayYES(bool f) {cout<<(f?"YES":"NO")<<endl;}
 
 signed main(){
   cin.tie(0);
   ios::sync_with_stdio(false);
   cout<<fixed<<setprecision(20);
 
-  int a,b;
-  cin>>a>>b;
+  int n;
+  string s;
+  cin>>n;
+  cin>>s;
 
-  cout<<(f(b)^f(max(0LL,a-1)))<<endl;
+  int sum=0;
+  
+  rep(i,n){
+    if(s[i]=='(') sum++;
+    else sum--;
+    if(sum<=-2){
+      sayYes(false);
+      return 0;
+    }
+  }
 
+  sayYes(sum==0);
 
 }

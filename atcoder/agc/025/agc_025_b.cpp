@@ -1,8 +1,8 @@
 
 #include<bits/stdc++.h>
 using namespace std;
-#define inf 1000000000
-#define INF 1000000000000000
+#define inf INT_MAX
+#define INF LLONG_MAX
 #define ll long long
 #define ull unsigned long long
 #define M 998244353
@@ -21,13 +21,12 @@ const int vy[4] = {1,0,-1,0};
 #define S second
 #define PB push_back
 #define EB emplace_back
-#define int ll
-void init(){
-  cin.tie(0);
-  ios::sync_with_stdio(false);
-}
+#define int ull
+#define vi vector<int>
+#define IP pair<int,P>
+#define PP pair<P,P>
 
-int n,a,b,k;
+
 
 int fac[310000];
 
@@ -50,27 +49,32 @@ int fac_init(int n){
   }
 }
 
+int n,a,b,k;
+map<int,int> ma,mb;
 
-main(){
-  init();
+signed main(){
+  cin.tie(0);
+  ios::sync_with_stdio(false);
+  cout<<fixed<<setprecision(20);
+
   cin>>n>>a>>b>>k;
-
- 
   fac_init(n);
 
-  int ans=0;
- 
-
-  rep(aa,n+1){
-    int bb=k-aa*a;
-    if(bb>=0&&bb%b==0&&bb/b<=n){
-      ans+=comb(n,aa)*comb(n,bb/b);
-      ans%=M;
-    
-    }
+  rep(i,n+1){
+    int m=comb(n,i);
+    ma[a*i]=m;
+    mb[b*i]=m;
   }
 
-
+  int ans=0;
+  rep(i,n+1){
+    int res=ma[a*i]*mb[k-a*i];
+    res%=M;
+    ans+=res;
+    ans%=M;
+  }
 
   cout<<ans<<endl;
+
+
 }

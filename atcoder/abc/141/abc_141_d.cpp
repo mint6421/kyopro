@@ -26,24 +26,31 @@ const int vy[4] = {1,0,-1,0};
 #define IP pair<int,P>
 #define PP pair<P,P>
 
-int f(int n){
-  if(n%4==0) return n;
-  if(n%4==1) return 1;
-  if(n%4==2) return n+1;
-  if(n%4==3) return 0;
-
-}
-
 
 signed main(){
   cin.tie(0);
   ios::sync_with_stdio(false);
   cout<<fixed<<setprecision(20);
 
-  int a,b;
-  cin>>a>>b;
+  int n,m;
+  cin>>n>>m;
+  priority_queue<int> q;
+  rep(i,n){
+    int a;
+    cin>>a;
+    q.push(a);
+  }
 
-  cout<<(f(b)^f(max(0LL,a-1)))<<endl;
+  rep(i,m){
+    int t=q.top(); q.pop();
+    q.push(t/2);
+  }
+
+  int ans=0;
+  rep(i,n){
+    ans+=q.top(); q.pop();
+  }
+  cout<<ans<<endl;
 
 
 }

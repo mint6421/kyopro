@@ -26,24 +26,64 @@ const int vy[4] = {1,0,-1,0};
 #define IP pair<int,P>
 #define PP pair<P,P>
 
-int f(int n){
-  if(n%4==0) return n;
-  if(n%4==1) return 1;
-  if(n%4==2) return n+1;
-  if(n%4==3) return 0;
 
+int c[1100][1100];
+
+void comb_table(void){
+  for(int i=0;i<=1000;i++){
+    for(int j=0;j<=i;j++){
+      if(j==0||j==i){
+        c[i][j] = 1LL;
+      }
+      else{
+        c[i][j]=(c[i-1][j-1]+c[i-1][j]);
+      }
+    }
+  }
 }
-
 
 signed main(){
   cin.tie(0);
   ios::sync_with_stdio(false);
   cout<<fixed<<setprecision(20);
 
-  int a,b;
-  cin>>a>>b;
+  int n,a,b;
+  cin>>n>>a>>b;
+  vi v(n);
+  rep(i,n){
+    cin>>v[i];
+  }
 
-  cout<<(f(b)^f(max(0LL,a-1)))<<endl;
+  sort(all(v));
+  reverse(all(v));
+
+  int s=0,t=0;
+  rep(i,n){
+    if(v[i]==v[a-1]){
+      s++;
+      if(i<a) t++;
+    }
+  }
+
+  double ave=0;
+  rep(i,a){
+    ave+=v[i];
+  }
+
+  ave/=a;
+  comb_table();
+  cout<<ave<<endl;
+  int ans=0;
+  if(a==t){
+    FOR(i,a,b+1){
+      ans+=c[s][i];
+    }
+  }else{
+    ans=c[s][t];
+  }
+
+  cout<<ans<<endl;
+
 
 
 }

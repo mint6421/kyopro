@@ -26,11 +26,30 @@ const int vy[4] = {1,0,-1,0};
 #define IP pair<int,P>
 #define PP pair<P,P>
 
-int f(int n){
-  if(n%4==0) return n;
-  if(n%4==1) return 1;
-  if(n%4==2) return n+1;
-  if(n%4==3) return 0;
+int d,g;
+int p[11],c[11];
+
+int f(int k){
+  int sum=0;
+  int res=0;
+  int t=-1;
+  rep(i,d){
+    if(k&(1<<i)){
+      sum+=p[i]*100*(i+1);
+      sum+=c[i];
+      res+=p[i];
+    }else{
+      t=i;
+    }
+  }
+
+  //cout<<k<<' '<<sum<<' '<<t<<endl;
+
+  if(sum+p[t]*100*(t+1)<g) return INF;
+
+  if(sum>=g) return res;
+
+  return res+(g-sum+100*(t+1)-1)/(100*(t+1));
 
 }
 
@@ -40,10 +59,18 @@ signed main(){
   ios::sync_with_stdio(false);
   cout<<fixed<<setprecision(20);
 
-  int a,b;
-  cin>>a>>b;
+  cin>>d>>g;
+  rep(i,d){
+    cin>>p[i]>>c[i];
+  }
 
-  cout<<(f(b)^f(max(0LL,a-1)))<<endl;
+  int ans=INF;
+
+  rep(i,1<<d){
+    ans=min(ans,f(i));
+  }
+
+  cout<<ans<<endl;
 
 
 }

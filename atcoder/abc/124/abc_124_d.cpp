@@ -26,24 +26,37 @@ const int vy[4] = {1,0,-1,0};
 #define IP pair<int,P>
 #define PP pair<P,P>
 
-int f(int n){
-  if(n%4==0) return n;
-  if(n%4==1) return 1;
-  if(n%4==2) return n+1;
-  if(n%4==3) return 0;
-
-}
-
 
 signed main(){
   cin.tie(0);
   ios::sync_with_stdio(false);
   cout<<fixed<<setprecision(20);
 
-  int a,b;
-  cin>>a>>b;
+  int n,k;
+  string s;
+  cin>>n>>k;
+  cin>>s;
+  vector<P> v;
+  int t=0;
+  rep(i,n){
+    int j=i;
+    v.PB(P(t,s[i]));
+    while(j<n&&s[i]==s[j]) j++;
+    t+=j-i;
+    i=j-1;
+  }
+  v.PB(P(t,0));
 
-  cout<<(f(b)^f(max(0LL,a-1)))<<endl;
+  int ans=0;
+  rep(i,v.size()){
+    int m=v.size()-1;
+    int ij=i+k*2+(v[i].S=='1');
+    int j=min(m,ij);
+    ans=max(ans,v[j].F-v[i].F);
+  }
+
+  cout<<ans<<endl;
+
 
 
 }

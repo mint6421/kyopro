@@ -26,24 +26,56 @@ const int vy[4] = {1,0,-1,0};
 #define IP pair<int,P>
 #define PP pair<P,P>
 
-int f(int n){
-  if(n%4==0) return n;
-  if(n%4==1) return 1;
-  if(n%4==2) return n+1;
-  if(n%4==3) return 0;
-
-}
-
 
 signed main(){
   cin.tie(0);
   ios::sync_with_stdio(false);
   cout<<fixed<<setprecision(20);
 
-  int a,b;
-  cin>>a>>b;
+  int h,w;
+  int a[510][510];
 
-  cout<<(f(b)^f(max(0LL,a-1)))<<endl;
+  cin>>h>>w;
+  rep(i,h){
+    rep(j,w){
+      cin>>a[i][j];
+    }
+  }
+
+  int i=0,j=0;
+  vector<PP> ans;
+ 
+  while(true){
+    int ni=i,nj=j;
+    if(i%2==0){
+      if(nj==w-1) ni++;
+      else nj++;
+    }else{
+      if(nj==0) ni++;
+      else nj--;
+    }
+    //cout<<i<<' '<<j<<' '<<a[i][j]<<endl;
+    if(!(0<=ni&&ni<h&&0<=nj&&nj<w)){
+ 
+      break;
+    }
+
+    if(a[i][j]%2){
+      ans.PB(PP(P(i+1,j+1),P(ni+1,nj+1)));
+      a[i][j]--;
+      a[ni][nj]++;
+    }
+    i=ni;
+    j=nj;
+  }
+
+
+  cout<<ans.size()<<endl;
+  rep(i,ans.size()){
+    P x=ans[i].F,y=ans[i].S;
+    cout<<x.F<<' '<<x.S<<' '<<y.F<<' '<<y.S<<endl;
+  }
+  
 
 
 }
