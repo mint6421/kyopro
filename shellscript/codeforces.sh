@@ -7,9 +7,9 @@ CopyFiles(){
   NewDir=~/git/codeforces/"$1"
   mkdir $NewDir
 
-  for file in [a-z].cpp
+  for file in *.cpp
   do
-    cp "$file" "$NewDir"
+    mv "$file" "$NewDir"
 
     if [ $? != 0 ]; then
       echo "Can't copy File ! "
@@ -35,10 +35,10 @@ AddGit(){
   cd ../../
 
   git add *
-  git commit -m "add new file"
+  git commit -m `date "+%Y/%m/%d"`
 
-  Username=$(openssl rsautl -decrypt -inkey ~/.ssh/id_rsa -in ~/key/user.rsa)
-  Password=$(openssl rsautl -decrypt -inkey ~/.ssh/id_rsa -in ~/key/pass.rsa)
+  Username=$(openssl rsautl -decrypt -inkey ~/key/id_rsa -in ~/key/user.rsa)
+  Password=$(openssl rsautl -decrypt -inkey ~/key/id_rsa -in ~/key/pass.rsa)
 
   expect -c "
   spawn git push

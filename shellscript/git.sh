@@ -35,7 +35,8 @@ AddGit(){
   cd ../../
 
   git add *
-  git commit -m "add new file"
+  git commit -m `date "+%Y/%m/%d"`
+
 
   Username=$(openssl rsautl -decrypt -inkey ~/.ssh/id_rsa -in ~/key/user.rsa)
   Password=$(openssl rsautl -decrypt -inkey ~/.ssh/id_rsa -in ~/key/pass.rsa)

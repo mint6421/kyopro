@@ -7,7 +7,7 @@ CopyFiles(){
 
   NewDir=~/git/yukicoder
 
-  cp "$1" "$NewDir"
+  mv "$1" "$NewDir"
 
 
   cd $NewDir
@@ -18,10 +18,12 @@ AddGit(){
   cd ../
 
   git add *
-  git commit -m "add new file"
+  git commit -m `date "+%Y/%m/%d"`
 
-  Username=$(openssl rsautl -decrypt -inkey ~/.ssh/id_rsa -in ~/key/user.rsa)
-  Password=$(openssl rsautl -decrypt -inkey ~/.ssh/id_rsa -in ~/key/pass.rsa)
+
+
+  Username=$(openssl rsautl -decrypt -inkey ~/key/id_rsa -in ~/key/user.rsa)
+  Password=$(openssl rsautl -decrypt -inkey ~/key/id_rsa -in ~/key/pass.rsa)
 
   expect -c "
   spawn git push
