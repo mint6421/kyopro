@@ -1,0 +1,28 @@
+snippet bipartite
+
+
+  bool is_bipartite(WG<int> es){
+    vector<int> b(es.size(),0);
+    queue<int> q;
+
+    rep(i,es.size()){
+      if(b[i]) continue;
+      b[i]=1;
+      q.push(i);
+
+      while(!q.empty()){
+        int x=q.front(); q.pop();
+        for(auto e:es[x]){
+          if(b[e.to]==b[x]) return false;
+          else if(b[e.to]==0){
+            b[e.to]=-1*b[x];
+            q.push(e.to);
+          }
+        }
+      }
+    }
+
+    return true;
+  }
+
+

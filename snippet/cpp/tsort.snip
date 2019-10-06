@@ -1,10 +1,7 @@
 snippet tsort
 
 
-
-
-  template< typename T>
-  void tsort_dfs(int u,vector<int> &graph,bool visited[],WG<T> &g){
+  void tsort_dfs(int u,vector<int> &graph,bool visited[],UG &g){
 
     if(visited[u]) return;
     visited[u] = true;
@@ -14,11 +11,10 @@ snippet tsort
     graph.PB(u);
   }
 
-  template < typename T>
-  vector<int> tsort(WG<T> &g){
+  vector<int> tsort(UG &g){
     vector<int> graph;
     bool visited[110000] = {};
-    for(int i=1;i<g.size();i++){
+    for(int i=0;i<g.size();i++){
       tsort_dfs(i,graph,visited,g);
     }
     reverse(all(graph));

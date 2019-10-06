@@ -6,7 +6,7 @@ snippet tree_diameter
     pair< T, int > ret(0, idx);
     for(auto &e : g[idx]) {
       if(e.to == par) continue;
-      auto cost = dfs(g, e.to, idx);
+      auto cost = tree_dfs(g, e.to, idx);
       cost.first += e.cost;
       ret = max(ret, cost);
     }
@@ -19,3 +19,5 @@ snippet tree_diameter
     auto q = tree_dfs(g, p.second, -1);
     return (q.first);
   }
+
+
