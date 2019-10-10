@@ -1,7 +1,6 @@
 snippet LIS
 
 
-
   int LIS(vector<int> v,vector<int> a){
     rep(i,a.size()){
       int x = lower_bound(all(v),a[i])-v.begin();
@@ -10,4 +9,5 @@ snippet LIS
 
     return lower_bound(all(v),inf)-lower_bound(all(v),0);
   }
+
 
