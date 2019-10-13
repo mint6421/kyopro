@@ -23,6 +23,10 @@ const int vy[4] = {1,0,-1,0};
 #define EB emplace_back
 #define int ll
 #define vi vector<int>
+#define IP pair<int,P>
+#define PP pair<P,P>
+#define Yes(f){cout<<(f?"Yes":"No")<<endl;}
+#define YES(f){cout<<(f?"YES":"NO")<<endl;}
 
 
 
@@ -74,12 +78,44 @@ struct segTree {
   }
 };
 
+
 signed main(){
   cin.tie(0);
   ios::sync_with_stdio(false);
+  cout<<fixed<<setprecision(20);
 
   int n,d,k;
   cin>>n>>d>>k;
-  segTree<P> seg(n,[](P a,P b){return max(a,b);},P(INF,INF));
+  vi x(n);
+  segTree<P> seg(n,[](P a,P b){return min(a,b);},P(inf,-1));
+  rep(i,n){
+    cin>>x[i];
+    seg.update(i,P(x[i],i));
+  }
+
+  int maxans=0;
+  P ans(0,0);
+  FOR(i,1,n){
+    int j=max(0LL,i-d);
+    P p=seg.get(j,i);
+    int m=p.F;
+    int res=k*(x[i]-m);
+    if(maxans<res){
+      maxans=res;
+      ans=P(p.S,i);
+    }
+    //cout<<p.S<<' '<<p.S<<' '<<maxans<<endl;
+  }
+
+  if(maxans==0){
+    cout<<0<<endl;
+  }else{
+
+    cout<<maxans<<endl;
+    cout<<ans.F<<' '<<ans.S<<endl;
+  }
+
+
+
 
 }
