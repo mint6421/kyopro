@@ -27,62 +27,63 @@ const int vy[4] = {1,0,-1,0};
 #define Yes(f){cout<<(f?"Yes":"No")<<endl;}
 #define YES(f){cout<<(f?"YES":"NO")<<endl;}
 
+int n,s;
+vector<P> v;
 
-map<int,int> prime_factor(int n){
-  map<int,int> ret;
-  for(int i=2;i*i<=n;i++){
-    while(n%i==0){
-      ret[i]++;
-      n/=i;
-    }
+bool f(int m){
+  int sum=0;
+  int c=0;
+  vi w;
+  rep(i,n){
+    if(v[i].S<m) sum+=v[i].F;
+    else if(v[i].F>=m){
+      sum+=v[i].F;
+      c++;
+    }else w.PB(v[i].F);
   }
-  if(n!=1) ret[n]=1;
 
-  return ret;
+  
+  int d=max(0LL,(n+1)/2-c);
+  if(d>w.size()) return false;
+  
+
+  rep(i,w.size()){
+    if(i<w.size()-d) sum+=w[i];
+    else sum+=m;
+  }
+
+  return sum<=s;
 }
 
 
 
-ll power(ll x,ll k){
-  ll ret=1;
-  while(k>0){
-    if(k&1) (ret*=x) %= M;
-    (x*=x) %= M;
-    k >>= 1;
-  }
-  return ret;
-}
 
 signed main(){
   cin.tie(0);
   ios::sync_with_stdio(false);
   cout<<fixed<<setprecision(20);
-  
-  int n,k;
-  cin>>n>>k;
-  vi a(n);
-  rep(i,n){
-    cin>>a[i];
-  }
-  sort(all(a));
 
-  int ans=0;
-  map<int,int> p;
-
-  rep(i,n){
-    int s=1,t=1;
-    map<int,int> mp=prime_factor(a[i]);
-    for(P m:mp){
-      int u=((m.S+k-1)/k)*k;
-      s*=power(m.F,u-m.S);
-      t*=power(m.F,m.S-(m.S/k)*k);
+  int q;
+  cin>>q;
+  while(q--){
+    cin>>n>>s;
+    v.clear();
+    rep(i,n){
+      int a,b;
+      cin>>a>>b;
+      v.PB(P(a,b));
     }
-    ans+=p[s];
-    p[t]++;
-    //cout<<a[i]<<' '<<s<<' '<<t<<endl;
+    sort(all(v));
+    int l=1,r=inf;
+    while(r-l>1){
+      int m=(r+l)/2;
+      if(f(m)) l=m;
+      else r=m;
+      
+    }
+    cout<<l<<endl;
   }
 
-  cout<<ans<<endl;
 
 
 }
