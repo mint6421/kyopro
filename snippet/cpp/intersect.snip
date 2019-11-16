@@ -1,0 +1,13 @@
+snippet intersect
+
+    
+  bool intersect(PP a,PP b){
+    int ta=(b.F.F-b.S.F)*(a.F.S-b.F.S)+(b.F.S-b.S.S)*(b.F.F-a.F.F);
+    int tb=(b.F.F-b.S.F)*(a.S.S-b.F.S)+(b.F.S-b.S.S)*(b.F.F-a.S.F);
+    int tc=(a.F.F-a.S.F)*(b.F.S-a.F.S)+(a.F.S-a.S.S)*(a.F.F-b.F.F);
+    int td=(a.F.F-a.S.F)*(b.S.S-a.F.S)+(a.F.S-a.S.S)*(a.F.F-b.S.F);
+
+    return (tc*td<0&&ta*tb<=0);
+  }
+
+

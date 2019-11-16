@@ -1,0 +1,810 @@
+snippet BF
+
+
+  template< typename T >
+  vector< T > bellman_ford(Edges< T > &edges, int V, int s) {
+    const auto lim = numeric_limits< T >::max();
+    vector< T > dist(V, lim);
+    dist[s] = 0;
+    rep(i,V-1) {
+      for(auto &e : edges) {
+        if(dist[e.src] == lim) continue;
+        dist[e.to] = min(dist[e.to], dist[e.src] + e.cost);
+      }
+    }     
+  for(auto &e : edges) {
+      if(dist[e.src] == lim) continue;
+      if(dist[e.src] + e.cost < dist[e.to]) return vector< T >();
+    }
+    return dist;
+
+  }
+
+
+snippet BIT
+
+
+  struct BIT{
+    vector<int> bit;
+    int n;
+
+    BIT(int m){
+      n = m;
+      bit.assign(2*n,0);
+    }
+
+    int sum(int i){
+      int s = 0;
+      while(i>0){
+        s+=bit[i];
+        i-=i&-i;
+      }
+      return s;
+    }
+    void add(int i,int x){
+      while(i<=n){
+        bit[i]+=x;
+        i+=i&-i;
+      }
+    }
+    int operator[](const int &k) const {
+      return bit[n + k];
+    }
+
+
+  };
+
+
+snippet Dinic   
+
+  template< typename flow_t >
+  struct Dinic {
+    const flow_t INF;
+
+    struct edge {
+      int to;
+      flow_t cap;
+      int rev;
+      bool isrev;
+    };
+
+    vector< vector< edge > > graph;
+    vector< int > min_cost, iter;
+
+    Dinic(int V) : INF(numeric_limits< flow_t >::max()), graph(V) {}
+
+    void add_edge(int from, int to, flow_t cap) {
+      graph[from].emplace_back((edge) {to, cap, (int) graph[to].size(), false});
+      graph[to].emplace_back((edge) {from, 0, (int) graph[from].size() - 1, true});
+    }
+
+    bool bfs(int s, int t) {
+      min_cost.assign(graph.size(), -1);
+      queue< int > que;
+      min_cost[s] = 0;
+      que.push(s);
+      while(!que.empty() && min_cost[t] == -1) {
+        int p = que.front();
+        que.pop();
+        for(auto &e : graph[p]) {
+          if(e.cap > 0 && min_cost[e.to] == -1) {
+            min_cost[e.to] = min_cost[p] + 1;
+            que.push(e.to);
+          }
+        }
+      }
+      return min_cost[t] != -1;
+    }
+
+    flow_t dfs(int idx, const int t, flow_t flow) {
+      if(idx == t) return flow;
+      for(int &i = iter[idx]; i < graph[idx].size(); i++) {
+        edge &e = graph[idx][i];
+        if(e.cap > 0 && min_cost[idx] < min_cost[e.to]) {
+          flow_t d = dfs(e.to, t, min(flow, e.cap));
+          if(d > 0) {
+            e.cap -= d;
+            graph[e.to][e.rev].cap += d;
+            return d;
+          }
+        }
+      }
+      return 0;
+    }
+
+    flow_t max_flow(int s, int t) {
+      flow_t flow = 0;
+      while(bfs(s, t)) {
+        iter.assign(graph.size(), 0);
+        flow_t f = 0;
+        while((f = dfs(s, t, INF)) > 0) flow += f;
+      }
+      return flow;
+    }
+
+    void output() {
+      for(int i = 0; i < graph.size(); i++) {
+        for(auto &e : graph[i]) {
+          if(e.isrev) continue;
+          auto &rev_e = graph[e.to][e.rev];
+          cout << i << "->" << e.to << " (flow: " << rev_e.cap << "/" << e.cap + rev_e.cap << ")" << endl;
+        }
+      }
+    }
+  };
+
+
+snippet LCA
+
+
+  struct LCA{
+    const int MAX_LOG_V = 50;
+
+    vector<vector<int> > G,parent;
+    int root=0,V;
+    vector<int> depth;
+    LCA(){}
+    LCA(int V):V(V){init();}
+    LCA(int V,WG<int> es):V(V){init();rep(i,V){for(auto e:es[i]){G[i].PB(e.to);}}}
+
+    void init(){
+      for(int i=0;i<(int)G.size();i++) G[i].clear();
+      G.clear();
+      for(int i=0;i<(int)parent.size();i++) parent[i].clear();
+      parent.clear();
+      depth.clear();
+      G.resize(V);
+      parent.resize(MAX_LOG_V,vector<int>(V));
+      depth.resize(V);
+    }
+
+    void add(int u,int v){
+      G[u].PB(v);
+    }
+
+    void dfs(int v,int p,int d){
+      parent[0][v]=p;
+      depth[v]=d;
+      for(int i=0;i<(int)G[v].size();i++){
+        if(G[v][i]!=p) dfs(G[v][i],v,d+1);
+      }
+    }
+
+    void construct(){
+      dfs(root,-1,0);
+      for(int k=0;k+1<MAX_LOG_V;k++){
+        for(int v=0;v<V;v++){
+          if(parent[k][v]<0) parent[k+1][v]=-1;
+          else parent[k+1][v]=parent[k][parent[k][v]];
+        }
+      }
+    }
+
+    int lca(int u,int v){
+      if(depth[u]>depth[v]) swap(u,v);
+      for(int k=0;k<MAX_LOG_V;k++){
+        if((depth[v]-depth[u])>>k&1){
+          v=parent[k][v];
+        }
+      }
+      if(u==v) return u;
+      for(int k=MAX_LOG_V-1;k>=0;k--){
+        if(parent[k][u]!=parent[k][v]){
+          u=parent[k][u];
+          v=parent[k][v];
+        }
+      }
+      return parent[0][u];
+    }
+  };
+
+
+snippet LCS
+
+
+  void LCS(string s,string t){
+    FOR(i,1,s.size()+1){
+      FOR(j,1,t.size()+1){
+        if(s[i-1]==t[j-1]){
+          dp[i][j] = dp[i-1][j-1]+1;
+        }
+        dp[i][j] = max(dp[i][j],dp[i-1][j]);
+        dp[i][j] = max(dp[i][j],dp[i][j-1]);
+      }
+    }
+  }
+
+
+snippet LIS
+
+
+  int LIS(vector<int> a){
+    vector<int> v(a.size(),inf);
+    rep(i,a.size()){
+      int x = lower_bound(all(v),a[i])-v.begin();
+      v[x] = a[i];
+    }
+
+    return lower_bound(all(v),inf)-lower_bound(all(v),0);
+  }
+
+
+snippet SCC
+
+  template< typename G >
+  struct StronglyConnectedComponents {
+    const G &g;
+    UG gg, rg;
+    vector< int > comp, order, used;
+
+    StronglyConnectedComponents(G &g) : g(g), gg(g.size()), rg(g.size()), comp(g.size(), -1), used(g.size()) {
+      for(int i = 0; i < g.size(); i++) {
+        for(auto e : g[i]) {
+          gg[i].emplace_back((int) e);
+          rg[(int) e].emplace_back(i);
+        }
+      }
+    }
+
+    int operator[](int k) {
+      return comp[k];
+    }
+
+    void dfs(int idx) {
+      if(used[idx]) return;
+      used[idx] = true;
+      for(int to : gg[idx]) dfs(to);
+      order.push_back(idx);
+    }
+
+    void rdfs(int idx, int cnt) {
+      if(comp[idx] != -1) return;
+      comp[idx] = cnt;
+      for(int to : rg[idx]) rdfs(to, cnt);
+    }
+
+    void build(UG &t) {
+      for(int i = 0; i < gg.size(); i++) dfs(i);
+      reverse(begin(order), end(order));
+      int ptr = 0;
+      for(int i : order) if(comp[i] == -1) rdfs(i, ptr), ptr++;
+
+      t.resize(ptr);
+      for(int i = 0; i < g.size(); i++) {
+        for(auto &to : g[i]) {
+          int x = comp[i], y = comp[to];
+          if(x == y) continue;
+          t[x].push_back(y);
+        }
+      }
+    }
+  };
+
+
+snippet UF
+
+
+  struct UnionFind
+  {
+
+    vector<int> par;
+    vector<int> sizes;
+
+    UnionFind(int n) : par(n), sizes(n, 1) {
+      rep(i,n) par[i] = i;
+    }
+
+    int root(int x) {
+      if (x == par[x]) return x;
+      return par[x] = root(par[x]); 
+    }
+
+    bool unite(int x, int y) {
+
+      x = root(x);
+      y = root(y);
+
+      if (x == y) return false;
+
+      if (sizes[x] < sizes[y]) swap(x, y);
+
+      par[y] = x;
+      sizes[x] += sizes[y];
+
+      return true;
+    }
+
+    bool find(int x,int y){
+      return root(x)==root(y);
+    }
+
+    int size(int x) {
+      return sizes[root(x)];
+    }
+  };
+
+
+snippet bitcount:
+
+  int bitcount(int n){
+    int res=0;
+    while(n){
+      res+=(n&1);
+      n<<=1;
+    }  
+    return res;
+  }
+
+
+snippet comb
+
+
+  int fac[310000];
+
+  int inv(int x){
+    if(x==1) return 1;
+    return (M-M/x)*inv(M%x)%M;
+  }
+
+
+  int comb(int n,int k){
+    int x=(fac[k]*fac[n-k])%M;
+    return (fac[n]*inv(x))%M;
+  }
+
+  int fac_init(int n){
+    fac[0]=1;
+    FOR(i,1,n+1){
+      fac[i]=fac[i-1]*i;
+      fac[i]%=M;
+    }
+  }
+
+
+snippet comb_table
+
+
+  void comb_table(void){
+    for(int i=0;i<=1000;i++){
+      for(int j=0;j<=i;j++){
+        if(j==0||j==i){
+          c[i][j] = 1LL;
+        }
+        else{
+          c[i][j]=(c[i-1][j-1]+c[i-1][j]);
+        }
+      }
+    }
+  }
+
+
+snippet dijkstra
+
+
+  template< typename T >
+  vector<T> dijkstra(WG<T> &g,int s){
+    const auto lim = numeric_limits<T>::max();
+    vector<T> dist(g.size(),lim);
+    using Pi = pair<T,int>;
+    priority_queue<Pi,vector<Pi>,greater<Pi>> q;
+    dist[s] = 0;
+    q.emplace(dist[s],s);
+    while(!q.empty()){
+      T cost;
+      int idx;
+      tie(cost,idx) = q.top();
+      q.pop();
+      if(dist[idx] < cost) continue;
+      for( auto &e : g[idx]){
+        auto next_cost = cost + e.cost;
+        if(dist[e.to] <= next_cost) continue;
+        dist[e.to] = next_cost;
+        q.emplace(dist[e.to],e.to);
+      }
+    }
+    return dist;
+  }
+
+
+snippet divisor
+
+  vector<int> divisor(int n){
+    vector<int> ret;
+    for(int i=1;i*i<=n;i++){
+      if(n%i==0){
+        ret.P(i);
+        if(i*i!=n) ret.PB(n/i);
+      }
+    }
+
+    sort(all(ret));
+
+    return ret;
+  }
+
+
+snippet graph
+
+    
+  template< typename T >
+  struct edge {
+    int src, to;
+    T cost;
+
+    edge(int to, T cost) : src(-1), to(to), cost(cost) {}
+
+    edge(int src, int to, T cost) : src(src), to(to), cost(cost) {}
+
+    edge &operator=(const int &x) {
+      to = x;
+      return *this;
+    }
+
+    operator int() const { return to; }
+  };
+
+  template< typename T >
+  using Edges = vector< edge< T > >;
+  template< typename T >
+  using WG = vector< Edges< T > >;
+  using UG = vector< vector< int > >;
+  template< typename T >
+  using Matrix = vector< vector< T > >;
+
+
+snippet intersect
+
+    
+  bool intersect(PP a,PP b){
+    int ta=(b.F.F-b.S.F)*(a.F.S-b.F.S)+(b.F.S-b.S.S)*(b.F.F-a.F.F);
+    int tb=(b.F.F-b.S.F)*(a.S.S-b.F.S)+(b.F.S-b.S.S)*(b.F.F-a.S.F);
+    int tc=(a.F.F-a.S.F)*(b.F.S-a.F.S)+(a.F.S-a.S.S)*(a.F.F-b.F.F);
+    int td=(a.F.F-a.S.F)*(b.S.S-a.F.S)+(a.F.S-a.S.S)*(a.F.F-b.S.F);
+
+    return (tc*td<0&&ta*tb<=0);
+  }
+
+
+snippet bipartite
+
+
+  bool is_bipartite(WG<int> es){
+    vector<int> b(es.size(),0);
+    queue<int> q;
+
+    rep(i,es.size()){
+      if(b[i]) continue;
+      b[i]=1;
+      q.push(i);
+
+      while(!q.empty()){
+        int x=q.front(); q.pop();
+        for(auto e:es[x]){
+          if(b[e.to]==b[x]) return false;
+          else if(b[e.to]==0){
+            b[e.to]=-1*b[x];
+            q.push(e.to);
+          }
+        }
+      }
+    }
+
+    return true;
+  }
+
+
+snippet is_prime
+  
+  bool is_prime(int x){
+    if(x<2) return false;
+    for(int i=2;i*i<=x;i++){
+      if(x%i==0) return false;
+    }
+    return true;
+  }
+
+
+snippet is_square
+
+
+  bool is_square(int n){
+    ll l=0,r=(int)1e9;
+    while(r-l>1){
+      ll m=(r+l)/2;
+      if(m*m>n) r=m;
+      else l=m;
+    }
+
+
+    return (l*l==n);
+  }
+
+
+snippet kruskal
+
+  struct UnionFind
+  {
+
+    vector<int> par;
+    vector<int> sizes;
+
+    UnionFind(int n) : par(n), sizes(n, 1) {
+      rep(i,n) par[i] = i;
+    }
+
+    int find(int x) {
+      if (x == par[x]) return x;
+      return par[x] = find(par[x]); 
+    }
+
+    bool unite(int x, int y) {
+
+      x = find(x);
+      y = find(y);
+
+      if (x == y) return false;
+
+      if (sizes[x] < sizes[y]) swap(x, y);
+
+      par[y] = x;
+      sizes[x] += sizes[y];
+
+      return true;
+    }
+
+    int size(int x) {
+      return sizes[find(x)];
+    }
+  };
+
+
+  template<typename T>
+  T kruskal(Edges<T> &es,int n) {
+    sort(all(es),[](const edge<T> & a,const edge<T> &b){
+        return (a.cost < b.cost);
+        });
+
+    UnionFind uf(n);
+    T min_cost = 0;
+
+    for(auto &e:es) {
+      if(uf.unite(e.src,e.to)) 
+        min_cost += e.cost;
+    }
+
+    return min_cost;
+  }
+
+
+snippet paskal  
+
+  vector<vector<int>> paskal(int n){
+    vector<vector<int>> c(n+1,vector<int>(n+1,0));
+
+    rep(i,n+1){
+      rep(j,n+1){
+        if(j>i) break;
+        if(i==0||j==0) c[i][j]=1;
+        else c[i][j]=c[i-1][j-1]+c[i-1][j];
+        c[i][j]%=M;
+      }
+    }
+
+    return c;
+  }
+
+
+snippet power
+
+
+  ll power(ll x,ll k){
+    ll ret=1;
+    while(k>0){
+      if(k&1) (ret*=x) %= M;
+      (x*=x) %= M;
+      k >>= 1;
+    }
+    return ret;
+  }
+
+
+snippet prime_factor
+
+  map<int,int> prime_factor(int n){
+    map<int,int> ret;
+    for(int i=2;i*i<=n;i++){
+      while(n%i==0){
+        ret[i]++;
+        n/=i;
+      }
+    }
+    if(n!=1) ret[n]=1;
+    
+    return ret;
+  }
+
+
+snippet prime_table
+
+
+  vector< bool > prime_table(int n) {
+    vector< bool > prime(n + 1, true);
+    if(n >= 0) prime[0] = false;
+    if(n >= 1) prime[1] = false;
+    for(int i = 2; i * i <= n; i++) {
+      if(!prime[i]) continue;
+      for(int j = i + i; j <= n; j += i) {
+        prime[j] = false;
+      }
+    }
+    return prime;
+  }
+
+
+snippet rolling-hash
+
+
+
+  int contain(string a, string b){
+      int ret = 0;
+      int al = a.length(), bl = b.length();
+      if(al > bl) return 0;
+
+      ull t = 1;
+      for (int i = 0; i < al; ++i) t *= M;
+
+      ull ah = 0, bh = 0;
+      for (int i = 0; i < al; ++i) ah = ah * M + a[i];
+      for (int i = 0; i < al; ++i) bh = bh * M + b[i];
+
+      for (int i = 0; i + al <= bl; ++i){
+          if(ah == bh) ret++;
+          if(i + al < bl) bh = bh * M + b[i + al] - b[i] * t;
+      }
+      return ret;
+  }
+
+
+snippet segTree
+
+
+  template< typename Monoid >
+  struct segTree {
+    using F = function< Monoid(Monoid, Monoid) >;
+   
+    int sz;
+    vector< Monoid > seg;
+   
+    const F f;
+    const Monoid M1;
+   
+    segTree(int n, const F f, const Monoid &M1) : f(f), M1(M1) {
+      sz = 1;
+      while(sz < n) sz <<= 1;
+      seg.assign(2 * sz, M1);
+    }
+   
+    void set(int k, const Monoid &x) {
+      seg[k + sz] = x;
+    }
+   
+    void build() {
+      for(int k = sz - 1; k > 0; k--) {
+        seg[k] = f(seg[2 * k + 0], seg[2 * k + 1]);
+      }
+    }
+   
+    void update(int k, const Monoid &x) {
+      k += sz;
+      seg[k] = x;
+      while(k >>= 1) {
+        seg[k] = f(seg[2 * k + 0], seg[2 * k + 1]);
+      }
+    }
+   
+    Monoid get(int a, int b) {
+      Monoid L = M1, R = M1;
+      for(a += sz, b += sz; a < b; a >>= 1, b >>= 1) {
+        if(a & 1) L = f(L, seg[a++]);
+        if(b & 1) R = f(seg[--b], R);
+      }
+      return f(L, R);
+    }
+   
+    Monoid operator[](const int &k) const {
+      return seg[k + sz];
+    }
+  };
+
+
+snippet temp
+
+
+  #include<bits/stdc++.h>
+  using namespace std;
+  #define inf INT_MAX
+  #define INF LLONG_MAX
+  #define ll long long
+  #define ull unsigned long long
+  #define M (int)(1e9+7)
+  #define P pair<int,int>
+  #define FOR(i,m,n) for(int i=(int)m;i<(int)n;i++)
+  #define RFOR(i,m,n) for(int i=(int)m;i>=(int)n;i--)
+  #define rep(i,n) FOR(i,0,n)
+  #define rrep(i,n) RFOR(i,n,0)
+  #define all(a) a.begin(),a.end()
+  const int vx[4] = {0,1,0,-1};
+  const int vy[4] = {1,0,-1,0};
+  #define F first
+  #define S second
+  #define PB push_back
+  #define EB emplace_back
+  #define int ll
+  #define vi vector<int>
+  #define IP pair<int,P>
+  #define PI pair<P,int>
+  #define PP pair<P,P>
+  #define Yes(f){cout<<(f?"Yes":"No")<<endl;}
+  #define YES(f){cout<<(f?"YES":"NO")<<endl;}
+  #define MPlus(x,y) {x=(x+y)%M;}
+  #define MSub(x,y) {x=(x-y+M)%M;}
+  #define MMul(x,y) {x=(x*y)%M;}
+
+
+  signed main(){
+    cin.tie(0);
+    ios::sync_with_stdio(false);
+    cout<<fixed<<setprecision(20);
+
+
+
+  }
+
+
+snippet tree_diameter
+
+    
+  template< typename T >
+  pair< T, int > tree_dfs(const WG< T > &g, int idx, int par) {
+    pair< T, int > ret(0, idx);
+    for(auto &e : g[idx]) {
+      if(e.to == par) continue;
+      auto cost = tree_dfs(g, e.to, idx);
+      cost.first += e.cost;
+      ret = max(ret, cost);
+    }
+    return ret;
+  }
+
+  template< typename T >
+  T tree_diameter(const WG< T > &g) {
+    auto p = tree_dfs(g, 0, -1);
+    auto q = tree_dfs(g, p.second, -1);
+    return (q.first);
+  }
+
+
+snippet tsort
+
+
+  void tsort_dfs(int u,vector<int> &graph,bool visited[],UG &g){
+
+    if(visited[u]) return;
+    visited[u] = true;
+    for(int i=0;i<g[u].size();i++){
+      tsort_dfs(g[u][i].to,graph,visited,g);
+    }
+    graph.PB(u);
+  }
+
+  vector<int> tsort(UG &g){
+    vector<int> graph;
+    bool visited[110000] = {};
+    for(int i=0;i<g.size();i++){
+      tsort_dfs(i,graph,visited,g);
+    }
+    reverse(all(graph));
+    return graph;
+  }
+
+

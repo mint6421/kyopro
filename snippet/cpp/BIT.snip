@@ -24,6 +24,11 @@ snippet BIT
         i+=i&-i;
       }
     }
+    int operator[](const int &k) const {
+      return bit[n + k];
+    }
+
+
   };
 
 

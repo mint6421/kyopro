@@ -1,7 +1,8 @@
 snippet LIS
 
 
-  int LIS(vector<int> v,vector<int> a){
+  int LIS(vector<int> a){
+    vector<int> v(a.size(),inf);
     rep(i,a.size()){
       int x = lower_bound(all(v),a[i])-v.begin();
       v[x] = a[i];
