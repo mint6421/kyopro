@@ -24,35 +24,30 @@ snippet BF
 snippet BIT
 
 
-  struct BIT{
-    vector<int> bit;
-    int n;
+  template< typename T >
+  struct BIT {
+    vector< T > data;
 
-    BIT(int m){
-      n = m;
-      bit.assign(2*n,0);
+    BIT(int sz) {
+      data.assign(++sz, 0);
     }
 
-    int sum(int i){
-      int s = 0;
-      while(i>0){
-        s+=bit[i];
-        i-=i&-i;
-      }
-      return s;
-    }
-    void add(int i,int x){
-      while(i<=n){
-        bit[i]+=x;
-        i+=i&-i;
-      }
-    }
-    int operator[](const int &k) const {
-      return bit[n + k];
+    T sum(int k) {
+      T ret = 0;
+      for(++k; k > 0; k -= k & -k) ret=Madd(ret,data[k]);
+      return (ret);
     }
 
+    T get(int x,int y){
 
+      return Msub(sum(y),sum(x));
+    }
+
+    void add(int k, T x) {
+      for(++k; k < data.size(); k += k & -k) data[k]=Madd(data[k],x);
+    }
   };
+
 
 
 snippet Dinic   
@@ -324,6 +319,24 @@ snippet UF
   };
 
 
+snippet allPair
+
+
+  vector<vector<P>> allPair(vi v){
+    vector<vector<P>> ret;  
+    do{
+      vector<P> res;
+      rep(i,v.size()/2){
+        res.PB(P(v[i],v[i+v.size()/2]));
+      }
+      ret.PB(res);
+      reverse(v.begin()+v.size()/2,v.end());
+    }while(next_permutation(all(v)));
+
+    return ret;
+  }
+
+
 snippet bitcount:
 
   int bitcount(int n){
@@ -336,28 +349,32 @@ snippet bitcount:
   }
 
 
+snippet calcNext
+
+  vector<vi>> calcNext(string s){
+    int n=s.size();
+    vector<vi>> res(n+1,vi(26,n));
+    rrep(i,n-1){
+      rep(j,27) res[i][j]=res[i+1][j];
+      res[i][s[i]-'a']=i;
+    }
+
+    return res;
+  }
+
+
 snippet comb
 
-
-  int fac[310000];
-
-  int inv(int x){
-    if(x==1) return 1;
-    return (M-M/x)*inv(M%x)%M;
-  }
-
-
-  int comb(int n,int k){
-    int x=(fac[k]*fac[n-k])%M;
-    return (fac[n]*inv(x))%M;
-  }
-
-  int fac_init(int n){
-    fac[0]=1;
-    FOR(i,1,n+1){
-      fac[i]=fac[i-1]*i;
-      fac[i]%=M;
+  int comb(int n,int c){
+    const int num=400001;
+    static int fact[num+1],factr[num+1],inv[num+1];
+    if(fact[0]==0){
+      inv[1]=fact[0]=factr[0]=1;
+      FOR(i,2,num+1) inv[i]=inv[M%i]*(M-M/i)%M;
+      FOR(i,1,num+1) fact[i]=fact[i-1]*i%M,factr[i]=factr[i-1]*inv[i]%M;
     }
+    if(c<0||c>n) return 0;
+    return factr[c]*fact[n]%M*factr[n-c]%M;
   }
 
 
@@ -746,9 +763,9 @@ snippet temp
   #define PP pair<P,P>
   #define Yes(f){cout<<(f?"Yes":"No")<<endl;}
   #define YES(f){cout<<(f?"YES":"NO")<<endl;}
-  #define MPlus(x,y) {x=(x+y)%M;}
-  #define MSub(x,y) {x=(x-y+M)%M;}
-  #define MMul(x,y) {x=(x*y)%M;}
+  int Madd(int x,int y) {return (x+y)%M;}
+  int Msub(int x,int y) {return (x-y+M)%M;}
+  int Mmul(int x,int y) {return (x*y)%M;}
 
 
   signed main(){

@@ -1,0 +1,18 @@
+snippet allPair
+
+
+  vector<vector<P>> allPair(vi v){
+    vector<vector<P>> ret;  
+    do{
+      vector<P> res;
+      rep(i,v.size()/2){
+        res.PB(P(v[i],v[i+v.size()/2]));
+      }
+      ret.PB(res);
+      reverse(v.begin()+v.size()/2,v.end());
+    }while(next_permutation(all(v)));
+
+    return ret;
+  }
+
+

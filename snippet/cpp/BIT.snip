@@ -1,34 +1,29 @@
 snippet BIT
 
 
-  struct BIT{
-    vector<int> bit;
-    int n;
+  template< typename T >
+  struct BIT {
+    vector< T > data;
 
-    BIT(int m){
-      n = m;
-      bit.assign(2*n,0);
+    BIT(int sz) {
+      data.assign(++sz, 0);
     }
 
-    int sum(int i){
-      int s = 0;
-      while(i>0){
-        s+=bit[i];
-        i-=i&-i;
-      }
-      return s;
-    }
-    void add(int i,int x){
-      while(i<=n){
-        bit[i]+=x;
-        i+=i&-i;
-      }
-    }
-    int operator[](const int &k) const {
-      return bit[n + k];
+    T sum(int k) {
+      T ret = 0;
+      for(++k; k > 0; k -= k & -k) ret=Madd(ret,data[k]);
+      return (ret);
     }
 
+    T get(int x,int y){
 
+      return Msub(sum(y),sum(x));
+    }
+
+    void add(int k, T x) {
+      for(++k; k < data.size(); k += k & -k) data[k]=Madd(data[k],x);
+    }
   };
+
 
 

@@ -1,0 +1,14 @@
+snippet calcNext
+
+  vector<vi>> calcNext(string s){
+    int n=s.size();
+    vector<vi>> res(n+1,vi(26,n));
+    rrep(i,n-1){
+      rep(j,27) res[i][j]=res[i+1][j];
+      res[i][s[i]-'a']=i;
+    }
+
+    return res;
+  }
+
+

@@ -27,9 +27,9 @@ snippet temp
   #define PP pair<P,P>
   #define Yes(f){cout<<(f?"Yes":"No")<<endl;}
   #define YES(f){cout<<(f?"YES":"NO")<<endl;}
-  #define MPlus(x,y) {x=(x+y)%M;}
-  #define MSub(x,y) {x=(x-y+M)%M;}
-  #define MMul(x,y) {x=(x*y)%M;}
+  int Madd(int x,int y) {return (x+y)%M;}
+  int Msub(int x,int y) {return (x-y+M)%M;}
+  int Mmul(int x,int y) {return (x*y)%M;}
 
 
   signed main(){
