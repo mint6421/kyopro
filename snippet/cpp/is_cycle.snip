@@ -1,0 +1,38 @@
+snippet is_cycle
+
+  template < typename T >
+  bool is_cycle_dfs(int k,int p,vector<bool> &visited,vector<bool> &used,WG<T> &es){
+    if(visited[k]){
+      return true;
+    }
+    if(used[k]){
+      return false;
+    }
+
+    visited[k]=true;
+    used[k]=true;
+    bool ret=false;
+    for(auto e:es[k]){
+      if(e.to==p||ret) continue;
+      ret|=is_cycle_dfs(e.to,k,visited,used,es);
+    }
+
+    visited[k]=false;
+
+    return ret;
+  }
+
+  template < typename T >
+  bool is_cycle(WG<T> &es){
+    vector<bool> visited(es.size(),false);
+    vector<bool> used(es.size(),false);
+    bool flag=false;
+    rep(i,es.size()){
+      if(used[i]||flag) continue;
+      flag|=is_cycle_dfs(i,-1,visited,used,es);
+    }
+
+    return flag;
+  }
+
+

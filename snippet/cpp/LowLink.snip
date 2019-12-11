@@ -1,0 +1,46 @@
+snippet LowLink
+
+
+  template< typename T >
+  struct LowLink {
+    const WG<T> &g;
+    vector< int > used, ord, low;
+    vector< int > articulation;
+    vector< pair< int, int > > bridge;
+   
+    LowLink(const WG<T> &g) : g(g) {}
+   
+    int dfs(int idx, int k, int par) {
+      used[idx] = true;
+      ord[idx] = k++;
+      low[idx] = ord[idx];
+      bool is_articulation = false;
+      int cnt = 0;
+      for(auto &e : g[idx]) {
+        if(!used[e.to]) {
+          ++cnt;
+          k = dfs(e.to, k, idx);
+          low[idx] = min(low[idx], low[e.to]);
+          is_articulation |= ~par && low[e.to] >= ord[idx];
+          if(ord[idx] < low[e.to]) bridge.emplace_back(minmax(idx, (int) e.to));
+        } else if(e.to != par) {
+          low[idx] = min(low[idx], ord[e.to]);
+        }
+      }
+      is_articulation |= par == -1 && cnt > 1;
+      if(is_articulation) articulation.push_back(idx);
+      return k;
+    }
+   
+    virtual void build() {
+      used.assign(g.size(), 0);
+      ord.assign(g.size(), 0);
+      low.assign(g.size(), 0);
+      int k = 0;
+      for(int i = 0; i < g.size(); i++) {
+        if(!used[i]) k = dfs(i, k, -1);
+      }
+    }
+  };
+
+

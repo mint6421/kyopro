@@ -1,51 +1,134 @@
-snippet BF
-
-
-  template< typename T >
-  vector< T > bellman_ford(Edges< T > &edges, int V, int s) {
-    const auto lim = numeric_limits< T >::max();
-    vector< T > dist(V, lim);
-    dist[s] = 0;
-    rep(i,V-1) {
-      for(auto &e : edges) {
-        if(dist[e.src] == lim) continue;
-        dist[e.to] = min(dist[e.to], dist[e.src] + e.cost);
-      }
-    }     
-  for(auto &e : edges) {
-      if(dist[e.src] == lim) continue;
-      if(dist[e.src] + e.cost < dist[e.to]) return vector< T >();
-    }
-    return dist;
-
-  }
-
-
 snippet BIT
 
 
-  struct BIT{
-    vector<int> bit;
-    int n;
+  template< typename T >
+  struct BIT {
+    vector< T > data;
 
-    BIT(int m){
-      n = m;
-      bit.assign(2*n,0);
+    BIT(int sz) {
+      data.assign(++sz, 0);
     }
 
-    int sum(int i){
-      int s = 0;
-      while(i>0){
-        s+=bit[i];
-        i-=i&-i;
-      }
-      return s;
+    T sum(int k) {
+      T ret = 0;
+      for(++k; k > 0; k -= k & -k) ret=Madd(ret,data[k]);
+      return (ret);
     }
-    void add(int i,int x){
-      while(i<=n){
-        bit[i]+=x;
-        i+=i&-i;
+
+    T get(int x,int y){
+
+      return Msub(sum(y),sum(x));
+    }
+
+    void add(int k, T x) {
+      for(++k; k < data.size(); k += k & -k) data[k]=Madd(data[k],x);
+    }
+  };
+
+
+
+snippet Compress
+
+  
+  template< typename T >
+  struct Compress {
+    vector< T > xs;
+
+    Compress() = default;
+
+    Compress(const vector< T > &vs) {
+      add(vs);
+    }
+
+    Compress(const initializer_list< vector< T > > &vs) {
+      for(auto &p : vs) add(p);
+    }
+
+    void add(const vector< T > &vs) {
+      copy(begin(vs), end(vs), back_inserter(xs));
+    }
+
+    void add(const T &x) {
+      xs.emplace_back(x);
+    }
+
+    void build() {
+      sort(begin(xs), end(xs));
+      xs.erase(unique(begin(xs), end(xs)), end(xs));
+    }
+
+    vector< int > get(const vector< T > &vs) const {
+      vector< int > ret;
+      transform(begin(vs), end(vs), back_inserter(ret), [&](const T &x) {
+        return lower_bound(begin(xs), end(xs), x) - begin(xs);
+      });
+      return ret;
+    }
+
+    int get(const T &x) const {
+      return lower_bound(begin(xs), end(xs), x) - begin(xs);
+    }
+
+    const T &operator[](int k) const {
+      return xs[k];
+    }
+  };
+
+
+snippet CumulativeSum
+
+
+  template< class T >
+  struct CumulativeSum {
+    vector< T > data;
+
+    CumulativeSum(int sz) : data(sz, 0) {};
+
+    CumulativeSum(vector< T> v) : data(v.size()+1,0) {rep(i,v.size()) add(i+1,v[i]); build();};
+
+    void add(int k, T x) {
+      data[k] += x;
+    }
+
+    void build() {
+      for(int i = 1; i < data.size(); i++) {
+        data[i] += data[i - 1];
       }
+    }
+
+    T query(int l,int r) {  // [l,r)
+      if(l < 0) return (0);
+      return (data[min(r,(int)data.size()-1)]-data[min(l,(int)data.size()-1)]);
+    }
+  };
+
+
+snippet CumulativeSum2D
+
+  template< class T >
+  struct CumulativeSum2D {
+    vector< vector< T > > data;
+
+    CumulativeSum2D(int W, int H) : data(W+1,vector<T>(H + 1, 0)) {}
+    
+    CumulativeSum2D(vector<vector<T>> v) : data(v.size()+1,vector<T>(v[0].size()+1,0)){rep(i,v.size())rep(j,v[i].size())add(i,j,v[i][j]); build();}
+
+    void add(int x, int y, T z) {
+      ++x, ++y;
+      if(x >= data.size() || y >= data[0].size()) return;
+      data[x][y] += z;
+    }
+
+    void build() {
+      for(int i = 0; i < data.size()-1; i++) {
+        for(int j = 0; j < data[i].size()-1; j++) {
+          data[i+1][j+1] += data[i][j+1]+data[i+1][j]-data[i][j];
+        }
+      }
+    }
+
+    T query(int sx, int sy, int gx, int gy) {
+      return (data[gx][gy] - data[sx][gy] - data[gx][sy] + data[sx][sy]);
     }
   };
 
@@ -213,7 +296,8 @@ snippet LCS
 snippet LIS
 
 
-  int LIS(vector<int> v,vector<int> a){
+  int LIS(vector<int> a){
+    vector<int> v(a.size(),inf);
     rep(i,a.size()){
       int x = lower_bound(all(v),a[i])-v.begin();
       v[x] = a[i];
@@ -221,6 +305,150 @@ snippet LIS
 
     return lower_bound(all(v),inf)-lower_bound(all(v),0);
   }
+
+
+snippet LowLink
+
+
+  template< typename T >
+  struct LowLink {
+    const WG<T> &g;
+    vector< int > used, ord, low;
+    vector< int > articulation;
+    vector< pair< int, int > > bridge;
+   
+    LowLink(const WG<T> &g) : g(g) {}
+   
+    int dfs(int idx, int k, int par) {
+      used[idx] = true;
+      ord[idx] = k++;
+      low[idx] = ord[idx];
+      bool is_articulation = false;
+      int cnt = 0;
+      for(auto &e : g[idx]) {
+        if(!used[e.to]) {
+          ++cnt;
+          k = dfs(e.to, k, idx);
+          low[idx] = min(low[idx], low[e.to]);
+          is_articulation |= ~par && low[e.to] >= ord[idx];
+          if(ord[idx] < low[e.to]) bridge.emplace_back(minmax(idx, (int) e.to));
+        } else if(e.to != par) {
+          low[idx] = min(low[idx], ord[e.to]);
+        }
+      }
+      is_articulation |= par == -1 && cnt > 1;
+      if(is_articulation) articulation.push_back(idx);
+      return k;
+    }
+   
+    virtual void build() {
+      used.assign(g.size(), 0);
+      ord.assign(g.size(), 0);
+      low.assign(g.size(), 0);
+      int k = 0;
+      for(int i = 0; i < g.size(); i++) {
+        if(!used[i]) k = dfs(i, k, -1);
+      }
+    }
+  };
+
+
+snippet Mint
+
+  
+  struct Mint {
+    int x;
+
+    Mint() : x(0) {}
+
+    Mint(int y) : x(y >= 0 ? y % M : (M - (-y) % M) % M) {}
+
+    Mint &operator+=(const Mint &p) {
+      if((x += p.x) >= M) x -= M;
+      return *this;
+    }
+
+    Mint &operator-=(const Mint &p) {
+      if((x += M - p.x) >= M) x -= M;
+      return *this;
+    }
+
+    Mint &operator*=(const Mint &p) {
+      x = (int) (1LL * x * p.x % M);
+      return *this;
+    }
+
+    Mint &operator/=(const Mint &p) {
+      *this *= p.inverse();
+      return *this;
+    }
+
+    Mint operator-() const { return Mint(-x); }
+
+    Mint operator+(const Mint &p) const { return Mint(*this) += p; }
+
+    Mint operator-(const Mint &p) const { return Mint(*this) -= p; }
+
+    Mint operator*(const Mint &p) const { return Mint(*this) *= p; }
+
+    Mint operator/(const Mint &p) const { return Mint(*this) /= p; }
+
+    bool operator==(const Mint &p) const { return x == p.x; }
+
+    bool operator!=(const Mint &p) const { return x != p.x; }
+
+    Mint inverse() const {
+      int a = x, b = M, u = 1, v = 0, t;
+      while(b > 0) {
+        t = a / b;
+        swap(a -= t * b, b);
+        swap(u -= t * v, v);
+      }
+      return Mint(u);
+    }
+
+    Mint power(int n) const {
+      Mint ret(1), mul(x);
+      while(n > 0) {
+        if(n & 1) ret *= mul;
+        mul *= mul;
+        n >>= 1;
+      }
+      return ret;
+    }
+
+    friend ostream &operator<<(ostream &os, const Mint &p) {
+      return os << p.x;
+    }
+
+    friend istream &operator>>(istream &is, Mint &a) {
+      int t;
+      is >> t;
+      a = Mint(t);
+      return (is);
+    }
+
+    
+  };
+  using mint = Mint;
+
+snippet RandomNumberGenerator
+
+
+  struct RandomNumberGenerator {
+    mt19937 mt;
+
+    RandomNumberGenerator() : mt(chrono::steady_clock::now().time_since_epoch().count()) {}
+
+    int operator()(int a, int b) { // [a, b)
+      uniform_int_distribution< int > dist(a, b - 1);
+      return dist(mt);
+    }
+
+    int operator()(int b) { // [0, b)
+      return (*this)(0, b);
+    }
+  };
 
 
 snippet SCC
@@ -318,33 +546,90 @@ snippet UF
   };
 
 
+snippet allPair
+
+
+  vector<vector<P>> allPair(vi v){
+    vector<vector<P>> ret;  
+    do{
+      vector<P> res;
+      rep(i,v.size()/2){
+        res.PB(P(v[i],v[i+v.size()/2]));
+      }
+      ret.PB(res);
+      reverse(v.begin()+v.size()/2,v.end());
+    }while(next_permutation(all(v)));
+
+    return ret;
+  }
+
+
+snippet bellman_ford
+
+
+  template< typename T >
+  vector< T > bellman_ford(Edges< T > &edges, int V, int s) {
+    const auto INFINITY = numeric_limits< T >::max();
+    vector< T > dist(V, INFINITY);
+    dist[s] = 0;
+    for(int i = 0; i < V - 1; i++) {
+      for(auto &e : edges) {
+        if(dist[e.src] == INFINITY) continue;
+        dist[e.to] = min(dist[e.to], dist[e.src] + e.cost);
+      }
+    }
+    for(auto &e : edges) {
+      if(dist[e.src] == INFINITY) continue;
+      if(dist[e.src] + e.cost < dist[e.to]) return vector< T >();
+    }
+    return dist;
+  }
+
+
+snippet bitcount
+
+  int bitcount(int n){
+    int res=0;
+    while(n){
+      res+=(n&1);
+      n>>=1;
+    }  
+    return res;
+  }
+
+
+snippet calcNext
+
+  vector<vi>> calcNext(string s){
+    int n=s.size();
+    vector<vi>> res(n+1,vi(26,n));
+    rrep(i,n-1){
+      rep(j,27) res[i][j]=res[i+1][j];
+      res[i][s[i]-'a']=i;
+    }
+
+    return res;
+  }
+
+
 snippet comb
 
-
-  int fac[310000];
-
-  int inv(int x){
-    if(x==1) return 1;
-    return (M-M/x)*inv(M%x)%M;
-  }
-
-
-  int comb(int n,int k){
-    int x=(fac[k]*fac[n-k])%M;
-    return (fac[n]*inv(x))%M;
-  }
-
-  int fac_init(int n){
-    fac[0]=1;
-    FOR(i,1,n+1){
-      fac[i]=fac[i-1]*i;
-      fac[i]%=M;
+  int comb(int n,int c){
+    const int num=400001;
+    static int fact[num+1],factr[num+1],inv[num+1];
+    if(fact[0]==0){
+      inv[1]=fact[0]=factr[0]=1;
+      FOR(i,2,num+1) inv[i]=inv[M%i]*(M-M/i)%M;
+      FOR(i,1,num+1) fact[i]=fact[i-1]*i%M,factr[i]=factr[i-1]*inv[i]%M;
     }
+    if(c<0||c>n) return 0;
+    return factr[c]*fact[n]%M*factr[n-c]%M;
   }
 
 
 snippet comb_table
 
+  int c[1100][1100];
 
   void comb_table(void){
     for(int i=0;i<=1000;i++){
@@ -434,6 +719,19 @@ snippet graph
   using Matrix = vector< vector< T > >;
 
 
+snippet intersect
+
+    
+  bool intersect(PP a,PP b){
+    int ta=(b.F.F-b.S.F)*(a.F.S-b.F.S)+(b.F.S-b.S.S)*(b.F.F-a.F.F);
+    int tb=(b.F.F-b.S.F)*(a.S.S-b.F.S)+(b.F.S-b.S.S)*(b.F.F-a.S.F);
+    int tc=(a.F.F-a.S.F)*(b.F.S-a.F.S)+(a.F.S-a.S.S)*(a.F.F-b.F.F);
+    int td=(a.F.F-a.S.F)*(b.S.S-a.F.S)+(a.F.S-a.S.S)*(a.F.F-b.S.F);
+
+    return (tc*td<0&&ta*tb<=0);
+  }
+
+
 snippet bipartite
 
 
@@ -462,6 +760,44 @@ snippet bipartite
   }
 
 
+snippet is_cycle
+
+  template < typename T >
+  bool is_cycle_dfs(int k,int p,vector<bool> &visited,vector<bool> &used,WG<T> &es){
+    if(visited[k]){
+      return true;
+    }
+    if(used[k]){
+      return false;
+    }
+
+    visited[k]=true;
+    used[k]=true;
+    bool ret=false;
+    for(auto e:es[k]){
+      if(e.to==p||ret) continue;
+      ret|=is_cycle_dfs(e.to,k,visited,used,es);
+    }
+
+    visited[k]=false;
+
+    return ret;
+  }
+
+  template < typename T >
+  bool is_cycle(WG<T> &es){
+    vector<bool> visited(es.size(),false);
+    vector<bool> used(es.size(),false);
+    bool flag=false;
+    rep(i,es.size()){
+      if(used[i]||flag) continue;
+      flag|=is_cycle_dfs(i,-1,visited,used,es);
+    }
+
+    return flag;
+  }
+
+
 snippet is_prime
   
   bool is_prime(int x){
@@ -470,6 +806,22 @@ snippet is_prime
       if(x%i==0) return false;
     }
     return true;
+  }
+
+
+snippet is_square
+
+
+  bool is_square(int n){
+    ll l=0,r=(int)1e9;
+    while(r-l>1){
+      ll m=(r+l)/2;
+      if(m*m>n) r=m;
+      else l=m;
+    }
+
+
+    return (l*l==n);
   }
 
 
@@ -558,6 +910,31 @@ snippet power
       k >>= 1;
     }
     return ret;
+  }
+
+
+snippet prim
+
+
+  template< typename T >
+  T prim(WG< T > &g) {
+    using Pi = pair< T, int >;
+
+    T total = 0;
+    vector< bool > used(g.size(), false);
+    priority_queue< Pi, vector< Pi >, greater< Pi > > que;
+    que.emplace(0, 0);
+    while(!que.empty()) {
+      auto p = que.top();
+      que.pop();
+      if(used[p.second]) continue;
+      used[p.second] = true;
+      total += p.first;
+      for(auto &e : g[p.second]) {
+        que.emplace(e.cost, e.to);
+      }
+    }
+    return total;
   }
 
 
@@ -670,7 +1047,30 @@ snippet segTree
   };
 
 
+snippet slide_min
+  
+
+  template< typename T >
+  vector< T > slide_min(const vector< T > &v, int k)
+  {
+    deque< int > deq;
+    vector< T > ret;
+    for(int i = 0; i < v.size(); i++) {
+      while(!deq.empty() && v[deq.back()] >= v[i]) {
+        deq.pop_back();
+      }
+      deq.push_back(i);
+      if(i - k + 1 >= 0) {
+        ret.emplace_back(v[deq.front()]);
+        if(deq.front() == i - k + 1) deq.pop_front();
+      }
+    }
+    return ret;
+  }
+
+
 snippet temp
+
 
   #include<bits/stdc++.h>
   using namespace std;
@@ -680,16 +1080,13 @@ snippet temp
   #define ull unsigned long long
   #define M (int)(1e9+7)
   #define P pair<int,int>
-  #define PLL pair<ll,ll>
   #define FOR(i,m,n) for(int i=(int)m;i<(int)n;i++)
   #define RFOR(i,m,n) for(int i=(int)m;i>=(int)n;i--)
   #define rep(i,n) FOR(i,0,n)
   #define rrep(i,n) RFOR(i,n,0)
   #define all(a) a.begin(),a.end()
-  #define IN(a,n) rep(i,n){ cin>>a[i]; }
   const int vx[4] = {0,1,0,-1};
   const int vy[4] = {1,0,-1,0};
-  #define PI 3.14159265
   #define F first
   #define S second
   #define PB push_back
@@ -697,10 +1094,14 @@ snippet temp
   #define int ll
   #define vi vector<int>
   #define IP pair<int,P>
+  #define PI pair<P,int>
   #define PP pair<P,P>
   #define Yes(f){cout<<(f?"Yes":"No")<<endl;}
   #define YES(f){cout<<(f?"YES":"NO")<<endl;}
-  
+  int Madd(int x,int y) {return (x+y)%M;}
+  int Msub(int x,int y) {return (x-y+M)%M;}
+  int Mmul(int x,int y) {return (x*y)%M;}
+
 
   signed main(){
     cin.tie(0);
@@ -738,7 +1139,8 @@ snippet tree_diameter
 snippet tsort
 
 
-  void tsort_dfs(int u,vector<int> &graph,bool visited[],UG &g){
+  template< typename T >
+  void tsort_dfs(int u,vector<int> &graph,vector<bool> &visited,WG<T> &g){
 
     if(visited[u]) return;
     visited[u] = true;
@@ -748,14 +1150,34 @@ snippet tsort
     graph.PB(u);
   }
 
-  vector<int> tsort(UG &g){
+  template< typename T>
+  vector<int> tsort(WG<T> &g){
     vector<int> graph;
-    bool visited[110000] = {};
+    vector<bool> visited(g.size(),false);
     for(int i=0;i<g.size();i++){
       tsort_dfs(i,graph,visited,g);
     }
     reverse(all(graph));
     return graph;
+  }
+
+
+snippet z_algorithm
+
+  vector< int > z_algorithm(const string &s) {
+    vector< int > prefix(s.size());
+    for(int i = 1, j = 0; i < s.size(); i++) {
+      if(i + prefix[i - j] < j + prefix[j]) {
+        prefix[i] = prefix[i - j];
+      } else {
+        int k = max(0, j + prefix[j] - i);
+        while(i + k < s.size() && s[k] == s[i + k]) ++k;
+        prefix[i] = k;
+        j = i;
+      }
+    }
+    prefix[0] = (int) s.size();
+    return prefix;
   }
 
 

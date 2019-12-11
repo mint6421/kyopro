@@ -1,0 +1,79 @@
+snippet Mint
+
+  
+  struct Mint {
+    int x;
+
+    Mint() : x(0) {}
+
+    Mint(int y) : x(y >= 0 ? y % M : (M - (-y) % M) % M) {}
+
+    Mint &operator+=(const Mint &p) {
+      if((x += p.x) >= M) x -= M;
+      return *this;
+    }
+
+    Mint &operator-=(const Mint &p) {
+      if((x += M - p.x) >= M) x -= M;
+      return *this;
+    }
+
+    Mint &operator*=(const Mint &p) {
+      x = (int) (1LL * x * p.x % M);
+      return *this;
+    }
+
+    Mint &operator/=(const Mint &p) {
+      *this *= p.inverse();
+      return *this;
+    }
+
+    Mint operator-() const { return Mint(-x); }
+
+    Mint operator+(const Mint &p) const { return Mint(*this) += p; }
+
+    Mint operator-(const Mint &p) const { return Mint(*this) -= p; }
+
+    Mint operator*(const Mint &p) const { return Mint(*this) *= p; }
+
+    Mint operator/(const Mint &p) const { return Mint(*this) /= p; }
+
+    bool operator==(const Mint &p) const { return x == p.x; }
+
+    bool operator!=(const Mint &p) const { return x != p.x; }
+
+    Mint inverse() const {
+      int a = x, b = M, u = 1, v = 0, t;
+      while(b > 0) {
+        t = a / b;
+        swap(a -= t * b, b);
+        swap(u -= t * v, v);
+      }
+      return Mint(u);
+    }
+
+    Mint power(int n) const {
+      Mint ret(1), mul(x);
+      while(n > 0) {
+        if(n & 1) ret *= mul;
+        mul *= mul;
+        n >>= 1;
+      }
+      return ret;
+    }
+
+    friend ostream &operator<<(ostream &os, const Mint &p) {
+      return os << p.x;
+    }
+
+    friend istream &operator>>(istream &is, Mint &a) {
+      int t;
+      is >> t;
+      a = Mint(t);
+      return (is);
+    }
+
+    
+  };
+  using mint = Mint;
+
