@@ -26,9 +26,6 @@ const int vy[4] = {1,0,-1,0};
 #define PP pair<P,P>
 #define Yes(f){cout<<(f?"Yes":"No")<<endl;}
 #define YES(f){cout<<(f?"YES":"NO")<<endl;}
-int Madd(int x,int y) {return (x+y)%M;}
-int Msub(int x,int y) {return (x-y+M)%M;}
-int Mmul(int x,int y) {return (x*y)%M;}
 
 
 signed main(){
@@ -36,28 +33,11 @@ signed main(){
   ios::sync_with_stdio(false);
   cout<<fixed<<setprecision(20);
 
-  int n,m,a;
-  cin>>n>>m>>a;
-  vector<vector<P>> v(n+1);
-  rep(i,m){
-    int l,r,p;
-    cin>>l>>r>>p;
-    v[r].PB(P(l,p));
-  }
+  double a,b,x,y;
+  cin>>a>>b>>x>>y;
+  double s=min(x/a,y/b);
 
-  vi dp(n+1,0);
-  int ans=0;
-  FOR(i,1,n+1){
-    dp[i]=ans-a;
-    for(P x:v[i]){
-      int s=dp[x.F-1]+x.S;
-      s-=a*(i!=n);
-      dp[i]=max(dp[i],s);
-    }
-    ans=max(ans,dp[i]);
-  }
-
-  cout<<ans<<endl;
+  cout<<a*s+b*s<<endl;
 
 
 }

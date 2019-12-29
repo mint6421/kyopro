@@ -1,66 +1,63 @@
 
+
 #include<bits/stdc++.h>
 using namespace std;
-#define inf 1000000000
-#define INF 1000000000000000
+#define inf INT_MAX
+#define INF LLONG_MAX
 #define ll long long
 #define ull unsigned long long
 #define M (int)(1e9+7)
 #define P pair<int,int>
-#define PLL pair<ll,ll>
 #define FOR(i,m,n) for(int i=(int)m;i<(int)n;i++)
 #define RFOR(i,m,n) for(int i=(int)m;i>=(int)n;i--)
 #define rep(i,n) FOR(i,0,n)
 #define rrep(i,n) RFOR(i,n,0)
 #define all(a) a.begin(),a.end()
-#define IN(a,n) rep(i,n){ cin>>a[i]; }
 const int vx[4] = {0,1,0,-1};
 const int vy[4] = {1,0,-1,0};
-#define PI 3.14159265
 #define F first
 #define S second
 #define PB push_back
 #define EB emplace_back
 #define int ll
-#define PP pair<P,int>
-void init(){
+#define vi vector<int>
+#define IP pair<int,P>
+#define PI pair<P,int>
+#define PP pair<P,P>
+#define Yes(f){cout<<(f?"Yes":"No")<<endl;}
+#define YES(f){cout<<(f?"YES":"NO")<<endl;}
+int Madd(int x,int y) {return (x+y)%M;}
+int Msub(int x,int y) {return (x-y+M)%M;}
+int Mmul(int x,int y) {return (x*y)%M;}
+
+
+signed main(){
   cin.tie(0);
   ios::sync_with_stdio(false);
-}
+  cout<<fixed<<setprecision(20);
 
-
-int n,m,a;
-
-main(){
+  int n,m,a;
   cin>>n>>m>>a;
-  vector<PP> v(m);
+  vector<vector<P>> v(n+1);
   rep(i,m){
-    cin>>v[i].F.S>>v[i].F.F>>v[i].S;
+    int l,r,p;
+    cin>>l>>r>>p;
+    v[r].PB(P(l,p));
   }
 
-  sort(all(v));
-
-  int t=0;
-  vector<PP> res;
-  res.PB(PP(P(0,0),0));
-  rep(i,m){
-    if(t<v[i].F.S){
-      t=v[i].F.F;
-      res.PB(v[i]);
-    }
-  }
-  res.PB(PP(P(n+1,n+1),0));
-
+  vi dp(n+1,0);
   int ans=0;
-  FOR(i,1,res.size()-1){
-    int sum=res[i].S;
-    if(res[i].F.S-res[i-1].F.F!=1){
-      sum-=a;
-    }if(res[i+1].F.F-res[i].F.S!=1){
-      sum-=a;
+  FOR(i,1,n+1){
+    dp[i]=ans-a;
+    for(P x:v[i]){
+      int s=dp[x.F-1]+x.S;
+      s-=a*(i!=n);
+      dp[i]=max(dp[i],s);
     }
-    ans+=sum;
+    ans=max(ans,dp[i]);
   }
 
   cout<<ans<<endl;
+
+
 }

@@ -26,9 +26,6 @@ const int vy[4] = {1,0,-1,0};
 #define PP pair<P,P>
 #define Yes(f){cout<<(f?"Yes":"No")<<endl;}
 #define YES(f){cout<<(f?"YES":"NO")<<endl;}
-int Madd(int x,int y) {return (x+y)%M;}
-int Msub(int x,int y) {return (x-y+M)%M;}
-int Mmul(int x,int y) {return (x*y)%M;}
 
 
 signed main(){
@@ -38,25 +35,7 @@ signed main(){
 
   int n;
   cin>>n;
-  vi a(n);
-  rep(i,n){
-    cin>>a[i];
-  }
-  int dp[30][2]={};
-  dp[0][0]=a[0];
-  dp[0][1]=a[0];
-  FOR(i,1,n){
-    int s=max(dp[i-1][0]+a[i],dp[i-1][1]+a[i]);
-    s=max(s,max(dp[i-1][0]-a[i],dp[i-1][1]-a[i]));
-    s=max(s,max(dp[i-1][0]*a[i],dp[i-1][1]*a[i]));
-    if(a[i])s=max(s,max(dp[i-1][0]/a[i],dp[i-1][1]/a[i]));
-    dp[i][0]=s;
-    s=min(dp[i-1][0]+a[i],dp[i-1][1]+a[i]);
-    s=min(s,min(dp[i-1][0]-a[i],dp[i-1][1]-a[i]));
-    s=min(s,min(dp[i-1][0]*a[i],dp[i-1][1]*a[i]));
-    if(a[i])s=min(s,min(dp[i-1][0]/a[i],dp[i-1][1]/a[i]));
-    dp[i][1]=s;
-  }
+  cout<<n*(n+1)/2<<endl;
 
-  cout<<dp[n-1][0]<<endl;
+
 }

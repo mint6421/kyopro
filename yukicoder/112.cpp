@@ -35,18 +35,21 @@ signed main(){
 
   int n;
   cin>>n;
-  map<int,int> mp;
+  int sum=0;
+  vi a(n);
   rep(i,n){
-    int a;
-    cin>>a;
-    mp[a]++;
+    cin>>a[i];
+    sum+=a[i];
   }
 
-  for(P p:mp){
-    cout<<p.S<<' ';
+  sum/=(n-1);
+  int a=0,b=0;
+  rep(i,n){
+    if(sum-a[i]==2) a++;
+    else b++;
   }
-  if(mp.size()==1) cout<<0;
-  cout<<endl;
+
+  cout<<a<<' '<<b<<endl;
 
 
 }
